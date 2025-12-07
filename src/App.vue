@@ -21,7 +21,7 @@
 // 引入状态管理
 import {useGlobalSettingStore} from "@/store";
 import useLoadingStore from "@/store/LoadingStore";
-import {useGlobalStore} from "@/store/GlobalStore";
+import {useColorMode} from "@/hooks";
 import {useUrlStore} from "@/store";
 import useEditorSettingStore from "@/store/setting/EditorSettingStore";
 import {useBackupSettingStore} from "@/store/setting/BackupSettingStore";
@@ -78,7 +78,7 @@ initData().then(() => {
   }
 });
 // 初始化主题
-useGlobalStore().initDarkColors();
+useColorMode();
 
 
 </script>

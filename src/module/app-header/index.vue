@@ -5,86 +5,107 @@
         {{ name || 'ES-client' }}
       </div>
       <!-- 索引服务器选择 -->
-      <a-select v-model="urlId" placeholder="请选择链接" size="small" allow-search allow-clear @change="selectUrl"
-                class="url-select" :show-extra-options="true" :style="{width: width + 'px'}">
-        <a-option v-for="url in urls" :key="url.id" :label="url.name" :value="url.id"/>
+      <t-select v-model="urlId" placeholder="请选择链接" filterable clearable @change="selectUrl"
+                class="url-select" :style="{width: width + 'px'}">
+        <t-option v-for="url in urls" :key="url.id" :label="url.name" :value="url.id"/>
         <template #empty>
-          <div style="padding: 6px 0; text-align: center;">
-            <a-button type="primary" @click="openAddLink()">新增链接</a-button>
+          <div class="select-panel-footer">
+            <t-button theme="primary" variant="text" block @click="openAddLink()">新增链接</t-button>
           </div>
         </template>
-        <template #footer>
-          <div style="padding: 6px 0; text-align: center;">
-            <a-button type="primary" @click="openAddLink()">
+        <template #panel-bottom-content>
+          <div class="select-panel-footer">
+            <t-button theme="primary" variant="text" block @click="openAddLink()">
               新增链接
-            </a-button>
+            </t-button>
           </div>
         </template>
-      </a-select>
+      </t-select>
       <!-- 刷新按钮 -->
-      <a-button class="refresh" @click="refresh()" :disabled="loading || !urlId || urlId === ''">刷新</a-button>
-      <a-progress v-if="total_shards > 0" :percent="Math.round(active_shards / total_shards * 100) / 100"
-                  :status="status" style="width: 220px;margin-left: 14px;">
-        <template v-slot:text="scope">
+      <t-button theme="primary" class="refresh" @click="refresh()" :disabled="loading || !urlId || urlId === ''">刷新
+      </t-button>
+      <t-progress v-if="total_shards > 0" :percentage="Math.round(active_shards / total_shards * 100)"
+                  :status="status" class="mt-9px w-220px ml-14px">
+        <template #label>
           {{ active_shards }} / {{ total_shards }}
         </template>
-      </a-progress>
+      </t-progress>
     </div>
     <div class="right">
-      <LinkExtend  style="margin-right: 8px;"/>
+      <LinkExtend style="margin-right: 8px;"/>
       <!-- 系统通知 -->
-      <SystemNotify />
+      <SystemNotify/>
       <!-- 各种信息弹框 -->
       <app-info class-name="menu-item" :disabled="loading"/>
       <!-- 主题切换 -->
-      <a-dropdown>
-        <a-button class="menu-item" type="text" status="normal">
+      <t-dropdown trigger="click">
+        <t-button shape="square" variant="text" theme="primary">
           <template #icon>
-            <icon-sun v-if="darkType === DarkTypeEnum.LIGHT"/>
-            <icon-moon v-else-if="darkType === DarkTypeEnum.DARK"/>
-            <icon-palette v-else/>
+            <sunny-icon v-if="mode === 'light'"/>
+            <moon-icon v-else-if="mode === 'dark'"/>
+            <fill-color-icon v-else/>
           </template>
-        </a-button>
-        <template #content>
-          <a-doption @click="switchDarkColors(DarkTypeEnum.LIGHT)">
-            <template #icon>
-              <icon-sun/>
+        </t-button>
+        <t-dropdown-menu>
+          <t-dropdown-item @click="setMode('light')">
+            <template #prefix-icon>
+              <sunny-icon/>
             </template>
             日间
-          </a-doption>
-          <a-doption @click="switchDarkColors(DarkTypeEnum.DARK)">
-            <template #icon>
-              <icon-moon/>
+          </t-dropdown-item>
+          <t-dropdown-item @click="setMode('dark')">
+            <template #prefix-icon>
+              <moon-icon/>
             </template>
             黑夜
-          </a-doption>
-          <a-doption @click="switchDarkColors(DarkTypeEnum.AUTO)">
-            <template #icon>
-              <icon-palette/>
+          </t-dropdown-item>
+          <t-dropdown-item @click="setMode('auto')">
+            <template #prefix-icon>
+              <fill-color-icon/>
             </template>
             跟随系统
-          </a-doption>
-        </template>
-      </a-dropdown>
+          </t-dropdown-item>
+        </t-dropdown-menu>
+      </t-dropdown>
       <!-- 版本 -->
-      <a-dropdown @select="versionCommand" position="br">
-        <a-button class="menu-item" type="text" status="normal" :disabled="loading" style="padding: 0 7px;">
+      <t-dropdown @select="versionCommand" position="br">
+        <t-button class="menu-item" variant="text" theme="primary" :disabled="loading" style="padding: 0 7px;">
           {{ Constant.version }}
-        </a-button>
-        <template #content>
-          <a-doption value="feedback">问题反馈</a-doption>
-          <a-doption value="log">更新日志</a-doption>
-          <a-doption value="repository">代码仓库</a-doption>
-          <a-doption value="about">关于</a-doption>
-        </template>
-      </a-dropdown>
+        </t-button>
+        <t-dropdown-menu>
+          <t-dropdown-item @click="versionCommand('feedback')">
+            <template #prefix-icon>
+              <chat-message-icon/>
+            </template>
+            问题反馈
+          </t-dropdown-item>
+          <t-dropdown-item @click="versionCommand('log')">
+            <template #prefix-icon>
+              <chat-bubble-history-icon/>
+            </template>
+            更新日志
+          </t-dropdown-item>
+          <t-dropdown-item @click="versionCommand('repository')">
+            <template #prefix-icon>
+              <logo-github-icon/>
+            </template>
+            代码仓库
+          </t-dropdown-item>
+          <t-dropdown-item @click="versionCommand('about')">
+            <template #prefix-icon>
+              <InfoCircleIcon/>
+            </template>
+            关于
+          </t-dropdown-item>
+        </t-dropdown-menu>
+      </t-dropdown>
     </div>
     <!-- 问题反馈 -->
-    <a-modal v-model:visible="feedbackDialog" title="问题反馈" top="25vh" :close-on-click-modal="false"
-             render-to-body
-             draggable unmount-on-close :footer="false">
+    <t-dialog v-model:visible="feedbackDialog" header="问题反馈" placement="center" :close-on-overlay-click="false"
+              render-to-body
+              draggable unmount-on-close :footer="false">
       <feedback-module v-if="feedbackDialog"/>
-    </a-modal>
+    </t-dialog>
   </a-layout-header>
 </template>
 <script lang="ts" setup>
@@ -97,15 +118,24 @@ import LocalNameEnum from '@/enumeration/LocalNameEnum';
 import FeedbackModule from "@/module/Feedback/index.vue";
 import AppInfo from './app-info.vue';
 // 引入状态管理
-import {useUrlStore,useIndexStore} from "@/store";
+import {useIndexStore, useUrlStore} from "@/store";
 import useLoadingStore from "@/store/LoadingStore";
-import {DarkTypeEnum, useGlobalStore} from "@/store/GlobalStore";
+import {useColorMode} from "@/hooks";
 // 工具类
 import Assert from "@/utils/Assert";
 import {setItem} from '@/utils/utools/DbStorageUtil';
 import {openAddLink} from "@/page/setting/pages/link/components/EditLink";
 import {openUrl} from "@/utils/BrowserUtil";
 import LinkExtend from "@/components/AppExtend/LinkExtend.vue";
+import {
+  ChatBubbleHistoryIcon,
+  ChatMessageIcon,
+  FillColorIcon,
+  InfoCircleIcon,
+  LogoGithubIcon,
+  MoonIcon,
+  SunnyIcon
+} from "tdesign-icons-vue-next";
 
 const router = useRouter();
 const size = useWindowSize();
@@ -115,7 +145,8 @@ const feedbackDialog = ref<boolean>(false);
 
 const urls = computed(() => useUrlStore().urls);
 const loading = computed(() => useLoadingStore().loading);
-const darkType = computed(() => useGlobalStore().darkType);
+const {colorMode} = useColorMode();
+const mode = computed(() => colorMode.value);
 const name = computed(() => useIndexStore().name);
 const status = computed(() => {
   const status = useIndexStore().status;
@@ -124,9 +155,9 @@ const status = computed(() => {
   } else if (status === 'green') {
     return 'success';
   } else if (status === 'red') {
-    return 'danger';
+    return 'error';
   }
-  return 'normal';
+  return 'active';
 });
 const active_shards = computed(() => useIndexStore().active_shards);
 const total_shards = computed(() => useIndexStore().total_shards);
@@ -140,7 +171,10 @@ watch(() => useUrlStore().id, value => {
 })
 
 const refresh = () => useIndexStore().reset();
-const switchDarkColors = useGlobalStore().switchDarkColors;
+
+function setMode(m: 'light' | 'dark' | 'auto') {
+  colorMode.value = m;
+}
 
 async function selectUrl(value: any) {
   // 清空链接
@@ -158,7 +192,7 @@ async function selectUrl(value: any) {
   await useIndexStore().reset();
 }
 
-function versionCommand(command: any) {
+function versionCommand(command: string) {
   switch (command) {
     case 'about':
       router.push(PageNameEnum.MORE_ABOUT)
@@ -167,7 +201,7 @@ function versionCommand(command: any) {
       router.push(PageNameEnum.MORE_UPDATE)
       break;
     case 'repository':
-      openUrl(Constant.repositories[0].url)
+      openUrl(Constant.repositories[1].url)
       break;
     case 'update':
       alert('检查更新')
@@ -179,4 +213,9 @@ function versionCommand(command: any) {
 }
 
 </script>
-<style scoped></style>
+<style scoped>
+.select-panel-footer {
+  border-top: 1px solid var(--td-component-stroke);
+  padding: 6px;
+}
+</style>

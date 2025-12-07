@@ -1,56 +1,54 @@
 <template>
-  <a-badge :count="hasUnread ? 1 : 0" dot>
-    <a-button type="text" @click="openDrawer">
+  <t-badge :count="hasUnread ? 1 : 0" dot>
+    <t-button variant="text" theme="primary" shape="square" @click="openDrawer">
       <template #icon>
-        <icon-notification />
+        <notification-icon />
       </template>
-    </a-button>
-  </a-badge>
+    </t-button>
+  </t-badge>
 
-  <a-drawer
-    :visible="drawerVisible"
-    @cancel="closeDrawer"
-    title="系统通知"
-    width="500px"
+  <t-drawer
+    v-model:visible="drawerVisible"
+    header="系统通知"
+    size="500px"
     placement="right"
     :footer="false"
   >
-    <div class="notification-drawer">
-      <a-list>
-        <a-list-item v-for="a in pageItems" :key="a.id" @click="handleItemClick(a)" class="notification-item">
-          <a-list-item-meta
+      <t-list>
+        <t-list-item v-for="a in pageItems" :key="a.id" @click="handleItemClick(a)" class="notification-item">
+          <t-list-item-meta
             :title="renderTitle(a)"
             :description="a.description"
           />
           <div class="notification-item-footer">
             <span class="publish-date">{{ formatDate(a.published_at) }}</span>
-            <a-tag v-if="isUnread(a.id)" color="red" size="small">NEW</a-tag>
+            <t-tag v-if="isUnread(a.id)" theme="danger" size="small">NEW</t-tag>
           </div>
           <div class="notification-actions">
-            <a-button v-if="isUnread(a.id)" size="mini" @click.stop="markAsRead(a.id)">标记已读</a-button>
-            <a-button v-if="a.link" type="primary" size="mini" @click.stop="openLink(a)">打开链接</a-button>
+            <t-button v-if="isUnread(a.id)" size="small" @click.stop="markAsRead(a.id)">标记已读</t-button>
+            <t-button v-if="a.link" theme="primary" size="small" @click.stop="openLink(a)">打开链接</t-button>
           </div>
-        </a-list-item>
-      </a-list>
+        </t-list-item>
+      </t-list>
 
       <div class="pagination-wrapper" v-if="total > limit">
-        <a-pagination
+        <t-pagination
           :total="total"
           :page-size="limit"
           :current="currentPage"
-          @change="handlePageChange"
+          @current-change="handlePageChange"
           size="small"
         />
       </div>
-    </div>
-  </a-drawer>
+  </t-drawer>
 </template>
 
 <script lang="tsx" setup>
-import {Button, Notification as ArcoNotification} from '@arco-design/web-vue';
+import {Button, NotifyPlugin} from 'tdesign-vue-next';
 import {AnnouncementResponse, getAnnouncements} from './AnnouncementApi';
 import {Announcement} from './AnnouncementTypes';
 import {openUrl} from "@/utils/BrowserUtil";
+import {NotificationIcon} from "tdesign-icons-vue-next";
 
 const drawerVisible = ref(false);
 const currentPage = ref(1);
@@ -102,10 +100,6 @@ const openDrawer = () => {
   drawerVisible.value = true;
 };
 
-const closeDrawer = () => {
-  drawerVisible.value = false;
-};
-
 const handlePageChange = async (page: number) => {
   currentPage.value = page;
   offset.value = (page - 1) * limit.value;
@@ -139,15 +133,15 @@ const maybeNotifyOnce = () => {
   const within7Days = (new Date().getTime() - new Date(latest.published_at).getTime()) <= 7 * 24 * 60 * 60 * 1000;
   if (within7Days) {
     let notif: any;
-    notif = ArcoNotification.info({
+    notif = NotifyPlugin.info({
       title: latest.title,
-      content: () => (
+      default: () => (
         <div>
           <div style="margin-bottom:8px;">{latest.description ?? latest.title}</div>
           <div>
-            <Button size="mini" onClick={() => { markAsRead(latest.id); notif?.close?.(); }}>关闭</Button>
+            <Button size="small" onClick={() => { markAsRead(latest.id); notif?.close?.(); }}>关闭</Button>
             {latest.link && (
-              <Button type="primary" size="mini" style="margin-left:8px" onClick={() => {
+              <Button theme="primary" size="small" style="margin-left:8px" onClick={() => {
                 markAsRead(latest.id);
                 window.open(latest.link as string, '_blank');
                 notif?.close?.();
@@ -156,8 +150,8 @@ const maybeNotifyOnce = () => {
           </div>
         </div>
       ),
-      position: 'topRight',
-      closable: false,
+      placement: 'top-right',
+      closeBtn: false,
       duration: 3600000
     });
     lastNotifiedId.value = latest.id;
