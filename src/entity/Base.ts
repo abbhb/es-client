@@ -11,12 +11,12 @@ export default interface Base {
   /**
    * 创建时间
    */
-  createTime: Date | string;
+  createTime: Date | string | number;
 
   /**
    * 更新时间
    */
-  updateTime: Date | string;
+  updateTime: Date | string | number;
 
 
 }

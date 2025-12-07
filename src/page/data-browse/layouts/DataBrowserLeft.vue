@@ -6,30 +6,43 @@
         rowHeight: 34,
         bufferSize: 10,
         threshold: 10,
-        type: 'virtual',
+        type: 'virtual'
       }" :height="height" :actived="actives">
         <template #label="{ node }">
           <div class="flex items-center w-full" @click="onClick(node)" @dblclick="onDbClick(node)">
             <div class="mr-8px">
               <folder-icon v-if="node.value.startsWith('folder-')"/>
-              <file-icon v-else />
+              <file-icon v-else/>
             </div>
             <div>
               <div class="text-12px">{{ node.label }}</div>
             </div>
           </div>
         </template>
+        <template #operations="{ node }">
+          <t-button v-if="node.value === 'folder-view'" theme="primary" size="small" variant="text" shape="square"
+                    :disabled="!urlId" @click="onAddView">
+            <template #icon>
+              <add-icon/>
+            </template>
+          </t-button>
+          <t-button v-if="node.value.startsWith('view')" theme="danger" size="small" variant="text" shape="square"
+                    :disabled="!urlId" @click="onRemoveView(node)">
+            <template #icon>
+              <delete-icon />
+            </template>
+          </t-button>
+        </template>
       </t-tree>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import {TreeOptionData, TreeNodeModel} from "tdesign-vue-next";
-import {useIndexStore} from "@/store";
-import {useUrlStore} from "@/store";
-import {listDataBrowserViews} from "@/service/DataBrowser/DataBrowserView";
-import {FileIcon, FolderIcon} from "tdesign-icons-vue-next";
+import {TreeNodeModel, TreeOptionData} from "tdesign-vue-next";
+import {useIndexStore, useUrlStore} from "@/store";
+import {AddIcon, DeleteIcon, FileIcon, FolderIcon} from "tdesign-icons-vue-next";
 import {useDataBrowseStore} from "@/store/components/DataBrowseStore";
+import {useDataBrowserViewStore} from "@/store/components/DataBrowserViewStore";
 
 const dataBrowserLeftRef = useTemplateRef<HTMLDivElement>("dataBrowserLeft");
 
@@ -48,41 +61,40 @@ const alias = computed(() => {
   return Array.from(new Set(list.flatMap(e => e.alias))).sort((a, b) => a.localeCompare(b, 'zh'));
 });
 
-const view = computedAsync(async () => {
-  const {id} = useUrlStore();
-  if (!id) return [];
-  const items = await listDataBrowserViews(id);
-  return items.map(e => e.pattern).sort((a, b) => a.localeCompare(b, 'zh'));
-}, []);
+const view = computed(() => useDataBrowserViewStore().views);
 const query = computed(() => ([]));
 const data = computed<Array<TreeOptionData>>(() => ([
   {
-  label: '索引',
-  value: 'folder-index',
-  children: index.value.map(e => ({
-    label: e,
-    value: `index-${e}`
-  }))
-}, {
-  label: '别名',
-  value: 'folder-alias',
-  children: alias.value.map(e => ({
-    label: e,
-    value: `alias-${e}`
-  }))
-}, {
-  label: '视图',
-  value: 'folder-view',
-  children: view.value.map(e => ({
-    label: e,
-    value: `view-${e}`
-  }))
-}, {
-  label: '查询',
-  value: 'folder-query',
-  children: query.value.map(e => ({}))
-}
+    label: '索引',
+    value: 'folder-index',
+    children: index.value.map(e => ({
+      label: e,
+      value: `index-${e}`
+    }))
+  }, {
+    label: '别名',
+    value: 'folder-alias',
+    children: alias.value.map(e => ({
+      label: e,
+      value: `alias-${e}`
+    }))
+  }, {
+    label: '视图',
+    value: 'folder-view',
+    children: view.value.map(e => ({
+      label: e.pattern,
+      value: `view-${e.pattern}`,
+      sourceId: e.id
+    }))
+  }, {
+    label: '查询',
+    value: 'folder-query',
+    children: query.value.map(e => ({}))
+  }
 ]));
+const urlId = computed(() => useUrlStore().id);
+
+watch(() => useUrlStore().id, value => useDataBrowserViewStore().init(value), {immediate: true});
 
 function onClick(node: TreeNodeModel) {
   actives.value = [`${node.value}`];
@@ -91,6 +103,14 @@ function onClick(node: TreeNodeModel) {
 function onDbClick(node: TreeNodeModel) {
   actives.value[0] = `${node.value}`;
   useDataBrowseStore().openTab(`${node.value}`, node.label || `${Date.now()}`);
+}
+
+function onAddView() {
+  useDataBrowserViewStore().add();
+}
+
+function onRemoveView(node: TreeNodeModel) {
+  useDataBrowserViewStore().remove(node.data.sourceId!, node.label!);
 }
 
 </script>

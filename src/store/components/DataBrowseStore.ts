@@ -20,6 +20,12 @@ export const useDataBrowseStore = defineStore("data-browser", () => {
     const split = value.indexOf("-");
     const type = value.substring(0, split) as DataBrowserType;
     const val = value.substring(split + 1);
+
+    if (tabs.value.some(e => e.value === value)) {
+      tabId.value = value;
+      return;
+    }
+
     if (type === 'folder') return;
     const tab: DataBrowseTab = {
       label: label,
