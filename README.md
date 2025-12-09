@@ -11,6 +11,9 @@
 <p align="center"><strong>轻量、高效、安全的 Elasticsearch 桌面客户端</strong></p>
 
 <p align="center">
+<a href="https://gitcode.com/q2316367743/es-client">
+<img src="https://gitcode.com/q2316367743/es-client/star/badge.svg" alt="GitCode Star">
+</a>
 <a href="https://gitee.com/qiaoshengda/es-client">
 <img src="https://gitee.com/qiaoshengda/es-client/badge/star.svg?theme=white" alt="Gitee Stars">
 </a>
