@@ -6,7 +6,7 @@
 </template>
 <script lang="ts" setup>
 import {onMounted, onUnmounted, ref} from "vue";
-import Constant from "@/global/Constant";
+import {Constant} from "@/global/Constant";
 import {useUmami} from "@/plugins/umami";
 
 const lines = [

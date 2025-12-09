@@ -1,5 +1,5 @@
 import {showDialog} from "@/utils/model/DialogUtil";
-import Constant from "@/global/Constant";
+import {Constant} from "@/global/Constant";
 import UpdateItem from "@/components/update-item/index.vue";
 
 export function showVersionUpdateDialog() {

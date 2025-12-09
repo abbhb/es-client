@@ -63,7 +63,7 @@
         </t-dropdown-menu>
       </t-dropdown>
       <!-- 版本 -->
-      <t-dropdown @select="versionCommand" position="br">
+      <t-dropdown @select="versionCommand" placement="bottom-right" trigger="click">
         <t-button class="menu-item" variant="text" theme="primary" :disabled="loading" style="padding: 0 7px;">
           {{ Constant.version }}
         </t-button>
@@ -105,7 +105,7 @@
 </template>
 <script lang="ts" setup>
 import {useRouter} from 'vue-router';
-import Constant from '@/global/Constant';
+import {Constant} from '@/global/Constant';
 // 枚举
 import PageNameEnum from "@/enumeration/PageNameEnum";
 import LocalNameEnum from '@/enumeration/LocalNameEnum';

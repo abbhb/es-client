@@ -1,64 +1,71 @@
 <template>
-  <div class="dashboard-cat abs-07">
-    <a-spin dot tip="数据加载中..." :loading="loading">
+  <t-card class="dashboard-cat" size="small">
+    <t-loading dot tip="数据加载中..." :loading="loading">
       <div class="header">
-        <a-input-group>
-          <a-select v-model="activeKey" allow-search>
-            <a-option v-for="tab in tabs" :key="tab.key" :value="tab.key">
+        <t-space>
+          <t-select v-model="activeKey" allow-search>
+            <t-option v-for="tab in tabs" :key="tab.key" :value="tab.key">
               {{ tab.title }}
-            </a-option>
-          </a-select>
-          <a-select v-model="index" allow-search v-if="needIndex" allow-clear>
-            <a-option v-for="idx in indices" :key="idx" :value="idx">{{ idx }}</a-option>
-          </a-select>
-        </a-input-group>
+            </t-option>
+          </t-select>
+          <t-select v-if="needIndex" v-model="index" allow-search allow-clear>
+            <t-option v-for="idx in indices" :key="idx" :value="idx">{{ idx }}</t-option>
+          </t-select>
+        </t-space>
         <div>
-          <a-tooltip content="跳转到高级查询" position="br">
-            <a-button type="text" @click="jumpTo()">
+          <t-tooltip content="跳转到开发者工具" position="br">
+            <t-button variant="text" theme="primary" shape="square" @click="jumpTo()">
               <template #icon>
-                <icon-filter/>
+                <filter-icon />
               </template>
-            </a-button>
-          </a-tooltip>
-          <a-button type="text" @click="refresh()" :loading="loading">
+            </t-button>
+          </t-tooltip>
+          <t-button
+            variant="text"
+            theme="primary"
+            shape="square"
+            :loading="loading"
+            @click="refresh()"
+          >
             <template #icon>
-              <icon-refresh/>
+              <refresh-icon />
             </template>
-          </a-button>
+          </t-button>
         </div>
       </div>
-      <a-table :columns="columns" :data="records" :virtual-list-props="virtualListProps" :pagination="false"
-               :scroll="{minWidth: width}"/>
-    </a-spin>
-  </div>
+      <t-table :columns="columns" :data="records" :height="virtualListHeight" />
+    </t-loading>
+  </t-card>
 </template>
 <script lang="ts" setup>
-import {TableColumnData, TableData} from "@arco-design/web-vue";
-import {cat, tabs} from "@/page/dashboard/Cat/func";
+import { BaseTableCol, TableRowData } from "tdesign-vue-next";
+import { cat, tabs } from "@/page/dashboard/Cat/func";
 import MessageUtil from "@/utils/model/MessageUtil";
-import {useIndexStore, useUrlStore} from "@/store";
-import {useSeniorSearchStore} from "@/store/components/SeniorSearchStore";
+import { useIndexStore, useUrlStore } from "@/store";
 import PageNameEnum from "@/enumeration/PageNameEnum";
+import { FilterIcon, RefreshIcon } from "tdesign-icons-vue-next";
+import {useSeniorSearchStore} from "@/store/components/SeniorSearchStore";
 
 const size = useWindowSize();
 const router = useRouter();
 
 const loading = ref(false);
 
-const activeKey = ref('/_cat/allocation?v');
-const index = ref('');
+const activeKey = ref("/_cat/allocation?v");
+const index = ref("");
 
-const columns = ref(new Array<TableColumnData>());
-const records = ref(new Array<TableData>());
-const width = ref(0);
+const columns = ref(new Array<BaseTableCol>());
+const records = ref(new Array<TableRowData>());
 
-const virtualListProps = computed(() => ({
-  height: size.height.value - 90 - 36 - 4
-}));
-const indices = computed(() => useIndexStore().list.map(e => e.name));
-const needIndex = computed(() => activeKey.value.indexOf('{index}') > -1);
+const virtualListHeight = computed(() => size.height.value - 124);
+const indices = computed(() => useIndexStore().list.map((e) => e.name));
+const needIndex = computed(() => activeKey.value.indexOf("{index}") > -1);
 
-watch(() => activeKey.value, (value) => handler(value), {immediate: true});
+watch(
+  () => activeKey.value,
+  (key) => handler(key),
+  { immediate: true }
+);
 watch(() => index.value, refresh);
 
 watch(() => useUrlStore().current, refresh);
@@ -69,47 +76,47 @@ function refresh() {
 
 function handler(url: string) {
   // 清空数据
-  columns.value = new Array<TableColumnData>();
-  records.value = new Array<TableData>();
-  width.value = 0;
+  columns.value = new Array<BaseTableCol>();
+  records.value = new Array<TableRowData>();
   // 未选择链接不处理
-  if (useUrlStore().current.trim() === '') {
+  if (useUrlStore().current.trim() === "") {
     return;
   }
   // 需要索引，但是没选择
   if (needIndex.value) {
-    if (index.value === '') {
+    if (index.value === "") {
       return;
     } else {
-      url = url.replace('{index}', index.value);
+      url = url.replace("{index}", index.value);
     }
   }
   loading.value = true;
-  cat(url).then(data => {
-    columns.value = data.columns;
-    records.value = data.records;
-    width.value = data.width;
-  }).catch(e => MessageUtil.error("获取数据失败！", e))
-    .finally(() => loading.value = false);
+  cat(url)
+    .then((data) => {
+      columns.value = data.columns;
+      records.value = data.records;
+    })
+    .catch((e) => MessageUtil.error("获取数据失败！", e))
+    .finally(() => (loading.value = false));
 }
 
 function jumpTo() {
   router.push(PageNameEnum.SENIOR_SEARCH);
   useSeniorSearchStore().loadEvent({
-    method: 'GET',
+    method: "GET",
     link: activeKey.value,
-  }, false);
+    body: ""
+  });
 }
-
 </script>
 <style scoped lang="less">
 .dashboard-cat {
+  margin: 8px;
 
   .header {
     display: flex;
     justify-content: space-between;
     padding: 7px 0;
   }
-
 }
 </style>

@@ -72,14 +72,15 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {useGlobalSettingStore, useIndexStore} from "@/store";
+import {useGlobalSettingStore, useIndexStore, useUrlStore} from "@/store";
 import {showJson, showJsonDialogByAsync} from "@/utils/model/DialogUtil";
 import {Shard} from "@/domain/es/ClusterState";
 import {useFuse} from "@vueuse/integrations/useFuse";
 import {useIndexManageEvent} from "@/global/BeanFactory";
 import {OrderType} from "@/store/components/HomeStore";
-import ClusterApi from "@/components/es/ClusterApi";
 import {ClusterNode} from "@/domain/index/ClusterInfo";
+import {stringifyJsonWithBigIntSupport} from "$/util";
+import MessageUtil from "@/utils/model/MessageUtil";
 
 const UNASSIGNED = "Unassigned";
 
@@ -145,7 +146,7 @@ const items = computed(() => results.value.map(e => e.item));
 
 function openJsonDialog(shard: Shard | null) {
   if (shard) {
-    showJson(`${shard.index}/${shard.node}[${shard.shard}]`, shard, {
+    showJson(`${shard.index}/${shard.node}[${shard.shard}]`, shard ? stringifyJsonWithBigIntSupport(shard) : "", {
       width: '600px'
     });
   }
@@ -169,13 +170,17 @@ function handlerReplicaClass(shard: Shard | null): string {
 }
 
 function showClusterNode(node: string) {
-  showJsonDialogByAsync(`集群节点信息【${node}】`, ClusterApi._nodes().then(e => e.nodes[node]), {
+  const {client} = useUrlStore();
+  if (!client) return MessageUtil.error("请选择实例");
+  showJsonDialogByAsync(`集群节点信息【${node}】`, client.getJson('/_nodes').then(e => e.nodes[node]).then(stringifyJsonWithBigIntSupport), {
     width: '600px'
   })
 }
 
 function showNode(node: string) {
-  showJsonDialogByAsync(`节点信息【${node}】`, ClusterApi._nodes_stats().then(e => e.nodes[node]), {
+  const {client} = useUrlStore();
+  if (!client) return MessageUtil.error("请选择实例");
+  showJsonDialogByAsync(`节点信息【${node}】`, client.getJson('/_nodes/stats').then(e => e.nodes[node]).then(stringifyJsonWithBigIntSupport), {
     width: '600px'
   })
 }

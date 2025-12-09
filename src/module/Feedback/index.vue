@@ -33,7 +33,7 @@
   </div>
 </template>
 <script lang="ts">
-import Constant from "@/global/Constant";
+import {Constant} from "@/global/Constant";
 import {openUrl} from "@/utils/BrowserUtil";
 
 // TODO：反馈只可以返回一个位置

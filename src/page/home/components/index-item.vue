@@ -80,15 +80,12 @@
 import {mapState} from "pinia";
 import IndexApi from '@/components/es/IndexApi'
 import {getDefaultDocumentSearchQueryStr} from "@/domain/es/DocumentSearchQuery";
-import BaseOrder from "@/entity/BaseOrder";
-import {BaseQuery} from "@/entity/BaseQuery";
 import MessageUtil from "@/utils/model/MessageUtil";
 import MessageBoxUtil from "@/utils/model/MessageBoxUtil";
 import Optional from "@/utils/Optional";
 import {useIndexStore} from "@/store";
 import {useGlobalStore} from "@/store/GlobalStore";
 import {encodeValue, useDataBrowseStore} from "@/store/components/DataBrowseStore";
-import {baseSearchLoadEvent} from "@/store/components/BaseSearchStore";
 import {useSeniorSearchStore} from "@/store/components/SeniorSearchStore";
 import IndexView from "@/view/index/IndexView";
 import {useIndexManageEvent} from "@/global/BeanFactory";
@@ -144,13 +141,6 @@ export default defineComponent({
         return '打开';
       } else {
         return '未知状态'
-      }
-    },
-    indexStateTitle(): 'gray' | '' {
-      if (this.index.state === 'close') {
-        return 'gray';
-      } else {
-        return ''
       }
     },
     theme() {
@@ -214,14 +204,14 @@ export default defineComponent({
       MessageUtil.success("已成功复制到剪切板");
     },
     jumpToBaseSearch() {
-      if (this.index) {
-        baseSearchLoadEvent({
-          index: this.index.name,
-          conditions: new Array<BaseQuery>(),
-          orders: new Array<BaseOrder>(),
-          execute: true
-        }, this.$router)
-      }
+      // if (this.index) {
+      //   baseSearchLoadEvent({
+      //     index: this.index.name,
+      //     conditions: new Array<BaseQuery>(),
+      //     orders: new Array<BaseOrder>(),
+      //     execute: true
+      //   }, this.$router)
+      // }
     },
     jumpToDataBrowser() {
       if (this.index) {

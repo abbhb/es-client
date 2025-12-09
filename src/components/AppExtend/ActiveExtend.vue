@@ -27,7 +27,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import Constant from "@/global/Constant";
+import {Constant} from "@/global/Constant";
 
 const isVisible = ref(false);
 

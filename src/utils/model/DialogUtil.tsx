@@ -1,21 +1,17 @@
-import {Modal, ModalReturn} from "@arco-design/web-vue";
 import MessageUtil from "@/utils/model/MessageUtil";
-import {highlight} from "@/global/BeanFactory";
 import useLoadingStore from "@/store/LoadingStore";
 import {BrowserWindowType, createDataBrowserWindow} from "@/plugins/native/browser-window";
-import Constant from "@/global/Constant";
+import {Constant} from "@/global/Constant";
 import {formatJsonString} from "$/util";
-import {copyText} from "@/utils/BrowserUtil";
-import {stringifyJsonWithBigIntSupport} from "$/util";
-import {RenderFunction} from "vue";
+import {DialogInstance, DialogPlugin, TNode} from "tdesign-vue-next";
 import MonacoView from "@/components/view/MonacoView/index.vue";
+import {useUrlStore} from "@/store";
 
 /**
  * 对话框参数
  */
 interface DialogOption {
-  width: string,
-
+  width: string;
 }
 
 /**
@@ -24,83 +20,65 @@ interface DialogOption {
  * @param data 数据
  * @param options 操作人
  */
-export function showJsonDialogByAsync(title: string, data: Promise<any>, options?: DialogOption) {
+export function showJsonDialogByAsync(
+  title: string,
+  data: Promise<string>,
+  options?: DialogOption
+) {
   useLoadingStore().start("开始获取数据，请稍后");
-  data.then(json => showJson(title, json, options))
-    .catch(e => MessageUtil.error("数据获取失败", e))
+  data
+    .then((json) => showJson(title, json, options))
+    .catch((e) => MessageUtil.error("数据获取失败", e))
     .finally(() => useLoadingStore().close());
 }
 
-export function jsonToHtml(json: string | any): { html: string, original: string } {
-  // 原始值
-  let value: string;
-  // 格式化后的值
-  let html: string;
-  let needPretty = true;
-  if (typeof json === 'string') {
-    if (/^\s*(\{[\s\S]*}|\[[\s\S]*])\s*$/.test(json)) {
-      try {
-        value = formatJsonString(json)
-      } catch (e) {
-        MessageUtil.error("格式化JSON失败", e);
-        value = json as string;
-        needPretty = false;
-      }
-    } else {
-      value = json as string;
-      needPretty = false;
-    }
-  } else {
-    value = stringifyJsonWithBigIntSupport(json);
+/**
+ * 显示实例信息对话框
+ * @param title 对话框标题
+ * @param url 数据地址
+ * @param options 操作人
+ */
+export function showInstanceInfoDialog(title: string, url: string, options?: DialogOption) {
+  useLoadingStore().start("开始获取数据，请稍后");
+  const {client} = useUrlStore();
+  if (!client) {
+    MessageUtil.error("请选择一个实例");
+    return;
   }
-  // 原始值
-  if (needPretty && value !== '') {
-    let highlightResult = highlight.highlight(value, {
-      language: 'json'
-    });
-    html = highlightResult.value;
-  } else {
-    html = value;
-  }
-  return {html, original: value};
+  client.getText(url)
+    .then((json) => showJson(title, json, options))
+    .catch((e) => MessageUtil.error("数据获取失败", e))
+    .finally(() => useLoadingStore().close());
 }
 
-export function showJson(title: string, json: string | any, options?: DialogOption) {
+export function showJson(title: string, json: string, options?: DialogOption) {
   // 原始值
-  const {html, original} = jsonToHtml(json);
-  const execCopy = () => {
-    copyText(original);
-    MessageUtil.success("复制成功");
-  };
+  const value = formatJsonString(json);
   // 创建对话框
   if (Constant.isSupportPin) {
-
-    showDialog(title, () => <MonacoView
-      value={typeof json === 'string' ? formatJsonString(json) : formatJsonString(stringifyJsonWithBigIntSupport(json))}
-      height={'100%'}/>, options);
+    showDialog(title, () => <MonacoView value={value} height={"calc(100vh - 220px)"}/>, options);
   } else {
-    createDataBrowserWindow(BrowserWindowType.JSON, html, original, {
-      title: title,
+    createDataBrowserWindow(BrowserWindowType.JSON, value, value, {
+      title: title
     });
-
   }
-
 }
 
 /**
  * 显示一个对话框
- * @param title 对话框标题
+ * @param header 对话框标题
  * @param content 对话框内容
  * @param options 对话框选项
  */
-export function showDialog(title: string, content: RenderFunction, options?: DialogOption): ModalReturn {
+export function showDialog(header: string, content: TNode, options?: DialogOption): DialogInstance {
   // 创建对话框
-  return Modal.open({
-    title: title,
-    content: content,
+  return DialogPlugin({
+    header: header,
+    default: content,
     draggable: true,
     width: options ? options.width : "80vw",
     footer: false,
-    modalClass: "es-dialog"
+    className: "es-dialog",
+    placement: "center"
   });
 }

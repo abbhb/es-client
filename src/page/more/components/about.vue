@@ -112,7 +112,7 @@
 </template>
 
 <script lang="ts">
-import Constant from "@/global/Constant";
+import {Constant} from "@/global/Constant";
 import LicenseApache2_0 from "@/components/License/Apache2_0.vue";
 import FeedbackModule from '@/module/Feedback/index.vue';
 import { openUrl } from "@/utils/BrowserUtil";

@@ -25,6 +25,7 @@ import clusterApi from "@/components/es/ClusterApi";
 import {showJsonDialogByAsync} from "@/utils/model/DialogUtil";
 import {InfoCircleIcon} from "tdesign-icons-vue-next";
 import {DropdownOption} from "tdesign-vue-next";
+import {stringifyJsonWithBigIntSupport} from "$/util";
 
 export default defineComponent({
   name: 'home-info',
@@ -89,28 +90,28 @@ export default defineComponent({
       }
     },
     async info() {
-      showJsonDialogByAsync('信息', clusterApi.info());
+      showJsonDialogByAsync('信息', clusterApi.info().then(e => stringifyJsonWithBigIntSupport(e)));
     },
     async state() {
-      showJsonDialogByAsync('状态', clusterApi._stats());
+      showJsonDialogByAsync('状态', clusterApi._stats().then(e => stringifyJsonWithBigIntSupport(e)));
     },
     async node_stats() {
-      showJsonDialogByAsync('节点状态', clusterApi._nodes_stats());
+      showJsonDialogByAsync('节点状态', clusterApi._nodes_stats().then(e => stringifyJsonWithBigIntSupport(e)));
     },
     async cluster_nodes() {
-      showJsonDialogByAsync('集群节点', clusterApi._nodes());
+      showJsonDialogByAsync('集群节点', clusterApi._nodes().then(e => stringifyJsonWithBigIntSupport(e)));
     },
     async plugin() {
-      showJsonDialogByAsync('插件1', clusterApi._nodes_plugins());
+      showJsonDialogByAsync('插件1', clusterApi._nodes_plugins().then(e => stringifyJsonWithBigIntSupport(e)));
     },
     async cluster_status() {
-      showJsonDialogByAsync('集群状态', clusterApi._cluster_state());
+      showJsonDialogByAsync('集群状态', clusterApi._cluster_state().then(e => stringifyJsonWithBigIntSupport(e)));
     },
     async cluster_health() {
-      showJsonDialogByAsync('集群健康值', clusterApi._cluster_health());
+      showJsonDialogByAsync('集群健康值', clusterApi._cluster_health().then(e => stringifyJsonWithBigIntSupport(e)));
     },
     async template() {
-      showJsonDialogByAsync('模板', clusterApi._template());
+      showJsonDialogByAsync('模板', clusterApi._template().then(e => stringifyJsonWithBigIntSupport(e)));
     }
   }
 });

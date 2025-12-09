@@ -4,7 +4,7 @@ import PluginModeEnum from "@/enumeration/PluginModeEnum";
 
 const mode: PluginModeEnum = import.meta.env.VITE_MODE as PluginModeEnum;
 
-export default {
+export const Constant = {
   uid: "z1f3vu4k",
   name: "es-client",
   version: UpdateLog[0].version,

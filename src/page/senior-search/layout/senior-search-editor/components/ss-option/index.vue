@@ -56,7 +56,7 @@ import {
   useSeniorSearchSetting
 } from "@/page/senior-search/layout/senior-search-editor/components/ss-option/SeniorSearchSetting";
 import {openUrl} from "@/utils/BrowserUtil";
-import Constant from "@/global/Constant";
+import {Constant} from "@/global/Constant";
 
 const allowEdit = computed(() => useSeniorSearchStore().id !== 0);
 

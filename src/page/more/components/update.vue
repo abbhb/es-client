@@ -10,7 +10,7 @@
     </a-timeline>
 </template>
 <script lang="ts" setup>
-import Constant from "@/global/Constant";
+import {Constant} from "@/global/Constant";
 import {LogItemEnum} from "@/view/Data";
 import UpdateItem from "@/components/update-item/index.vue";
 

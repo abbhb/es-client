@@ -54,7 +54,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import Constant from "@/global/Constant";
+import {Constant} from "@/global/Constant";
 import MessageUtil from "@/utils/model/MessageUtil";
 import { execAdd } from "@/page/data-browse/component/DbHeader/DbContextmenu";
 import DbSimpleItem from "@/page/data-browse/component/DbHeader/components/DbSimpleItem.vue";

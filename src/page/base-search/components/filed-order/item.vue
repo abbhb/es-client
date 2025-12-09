@@ -1,70 +1,96 @@
 <template>
+  <div class="flex gap-8px items-center">
     <!-- 是否启用 -->
-    <a-switch :checked-value="true" :unchecked-value="false" type="round" v-model="order.isEnable"
-              checked-color="rgb(var(--green-6))" unchecked-color="rgb(var(--red-6))" style="margin: 4px 10px 4px 0;">
-        <template #checked>启用</template>
-        <template #unchecked>禁用</template>
-    </a-switch>
-    <a-select v-model="order.field" allow-search allow-create allow-clear placeholder="请选择排序字段"
-              style="width: 250px;">
-        <a-option v-for="(field, idx1) in fields" :key="idx1" :label="field.label" :value="field.value"></a-option>
-    </a-select>
-    <a-select v-model="order.type" filterable placeholder="请选择排序条件"
-              style="margin-left: 10px;width: 80px;">
-        <a-option label="asc" value="asc"></a-option>
-        <a-option label="desc" value="desc"></a-option>
-    </a-select>
-    <a-button type="primary" style="margin-left: 10px" @click="add()">
-        <template #icon>
-            <icon-plus/>
-        </template>
-    </a-button>
-    <a-button type="primary" status="danger" @click="remove(order.id)">
-        <template #icon>
-            <icon-minus/>
-        </template>
-    </a-button>
-    <a-button type="primary" status="success" style="margin-left:10px;margin-right: 20px;" @click="search()">
-        <template #icon>
-            <icon-search/>
-        </template>
-    </a-button>
+    <t-switch v-model="order.isEnable">
+      <template #label="slotProps">{{ slotProps.value ? "启用" : "禁用" }}</template>
+    </t-switch>
+    <t-select
+      v-model="order.field"
+      filterable
+      creatable
+      clearable
+      placeholder="请选择排序字段"
+      style="width: 250px"
+      :options="fieldOptions"
+    />
+    <t-select v-model="order.type" filterable placeholder="请选择排序条件" style="width: 80px">
+      <t-option label="asc" value="asc"></t-option>
+      <t-option label="desc" value="desc"></t-option>
+    </t-select>
+    <t-button theme="primary" shape="square" @click="add()">
+      <template #icon>
+        <plus-icon />
+      </template>
+    </t-button>
+    <t-button theme="danger" shape="square" @click="remove(order.id)">
+      <template #icon>
+        <minus-icon />
+      </template>
+    </t-button>
+    <t-button theme="success" shape="square" @click="search()">
+      <template #icon>
+        <search-icon />
+      </template>
+    </t-button>
+  </div>
 </template>
 <script lang="ts" setup>
-import BaseOrder from "@/entity/BaseOrder";
-import {baseSearchExecute, fields} from "@/store/components/BaseSearchStore";
+import { BaseSearchInstanceResult } from "@/hooks";
+import { useIndexStore } from "@/store";
+import { MinusIcon, PlusIcon, SearchIcon } from "tdesign-icons-vue-next";
+import { BaseQueryOrder } from "$/elasticsearch-client";
 
 const props = defineProps({
-    modelValue: Object as PropType<BaseOrder>
+  modelValue: Object as PropType<BaseQueryOrder>,
+  tab: {
+    type: Object as PropType<BaseSearchInstanceResult>,
+    required: true
+  }
 });
-const emits = defineEmits(['update:modelValue', 'add', 'remove']);
+const emits = defineEmits(["update:modelValue", "add", "remove"]);
 
-const order = ref<BaseOrder>(props.modelValue ? props.modelValue : {
-    id: new Date().getTime(),
-    field: '',
-    type: 'asc',
-    isEnable: true
-});
+const order = ref<BaseQueryOrder>(
+  props.modelValue
+    ? props.modelValue
+    : {
+        id: new Date().getTime(),
+        field: "",
+        type: "asc",
+        isEnable: true
+      }
+);
 
-watch(() => props.modelValue, value => {
+watch(
+  () => props.modelValue,
+  (value) => {
     if (value) {
-        order.value = value;
+      order.value = value;
     }
+  }
+);
+watch(
+  () => order.value,
+  (value) => {
+    emits("update:modelValue", value);
+  },
+  { deep: true }
+);
+
+const fieldOptions = computed(() => {
+  const { fieldOptionMap } = useIndexStore();
+  return fieldOptionMap[props.tab.index.value] || [];
 });
-watch(() => order.value, value => {
-    emits('update:modelValue', value)
-}, {deep: true});
 
 function add() {
-    emits('add');
+  emits("add");
 }
 
 function remove(id: number) {
-    emits('remove', id);
+  emits("remove", id);
 }
 
 function search() {
-    baseSearchExecute();
+  props.tab.run();
 }
 </script>
 <style scoped></style>

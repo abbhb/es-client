@@ -44,7 +44,7 @@ import DisplayRecord from "@/page/senior-search/layout/senior-search-display/dis
 import SeniorSearchDataView from '@/page/senior-search/layout/senior-search-display/DataView.vue'
 import DisplayHistory from "@/page/senior-search/layout/senior-search-display/display-history.vue";
 import {statistics, useSeniorShowResultEvent} from "@/global/BeanFactory";
-import Constant from "@/global/Constant";
+import {Constant} from "@/global/Constant";
 import {jsonToHtml} from "@/utils/model/DialogUtil";
 import {BrowserWindowType, createDataBrowserWindow} from "@/plugins/native/browser-window";
 import NotificationUtil from "@/utils/model/NotificationUtil";
