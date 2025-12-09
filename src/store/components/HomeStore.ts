@@ -1,6 +1,3 @@
-import {useIndexStore} from "@/store";
-
-
 export enum OrderType {
   NAME_ASC = 1,
   NAME_DESC = 2,
@@ -37,7 +34,7 @@ export const useHomeStore = createGlobalState(
   () => {
     // state
     const keyword = ref('');
-    const order = ref<OrderType>(useIndexStore().order);
+    const order = ref<OrderType>(1);
     const status = ref<Status>(Status.NONE)
 
     return {keyword, order, status}

@@ -23,10 +23,6 @@
             </t-descriptions>
           </template>
         </t-popup>
-        <t-select v-model="order" placeholder="索引排序" style="width: 120px;margin-left: 7px;">
-          <t-option :value="OrderType.NAME_ASC" label="名称正序"/>
-          <t-option :value="OrderType.NAME_DESC" label="名称倒序"/>
-        </t-select>
       </t-input-group>
       <!-- 新增索引 -->
       <t-button theme="primary" style="margin-left: 10px" @click="indexAdd()" :disabled="!url">
@@ -56,7 +52,7 @@
 import {useIndexStore, useUrlStore} from '@/store';
 import IndexItem from "./components/index-item.vue";
 import {useFuse} from "@vueuse/integrations/useFuse";
-import {OrderType, Status, useHomeStore} from "@/store/components/HomeStore";
+import {Status, useHomeStore} from "@/store/components/HomeStore";
 import {indexAdd} from "@/page/home/components/IndexAdd";
 
 
@@ -70,21 +66,7 @@ const url = computed(() => useUrlStore().url);
 const virtualListProps = computed(() => ({
   height: size.height.value - 40 - 15 - 42
 }))
-const indices = computed(() => {
-  useIndexStore().sort(order.value);
-  let indices = useIndexStore().indices;
-  // 状态
-  if (status.value !== Status.NONE) {
-    if (status.value === Status.OPEN) {
-      indices = indices.filter(index => index.state === 'open');
-    } else if (status.value === Status.CLOSE) {
-      indices = indices.filter(index => index.state === 'close');
-    }
-  }
-  // 排序
-  return indices;
-});
-
+const indices = computed(() => useIndexStore().list);
 
 const {results} = useFuse(keyword, indices, {
   matchAllWhenSearchEmpty: true,

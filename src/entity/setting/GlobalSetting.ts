@@ -46,6 +46,11 @@ export interface GlobalSetting {
    */
   homeIncludeIndices: Array<string>;
 
+  /**
+   * 索引排序
+   */
+  indexOrderBy: "asc" | "desc";
+
   /*--------------------------------- track_total_hits设置 ---------------------------------*/
 
   /**
@@ -102,6 +107,7 @@ export function getDefaultGlobalSetting(): GlobalSetting {
     homeIncludeIndices: new Array<string>(),
     trackTotalHitsValue: 10000,
     trackTotalHitsMode: 'true',
+    indexOrderBy: "asc",
 
     // 显示设置
     pageSize: 20,

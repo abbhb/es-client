@@ -40,7 +40,7 @@ export function indexAdd(): void {
   const activeKey = ref("1");
   const fromIndex = ref<string | undefined>();
 
-  const indices = computed(() => useIndexStore().indices);
+  const indices = computed(() => useIndexStore().list);
   const disabled = computed(() => !fromIndex.value);
 
   watch(() => index.value.name, value => {
@@ -78,7 +78,7 @@ export function indexAdd(): void {
       index.value = {
         name: index.value.name,
         settings: index.value.settings,
-        mappings: stringifyJsonWithBigIntSupport(sourceIndex.mapping)
+        mappings: stringifyJsonWithBigIntSupport(sourceIndex.indexInfo.mappings)
       };
     }
   }

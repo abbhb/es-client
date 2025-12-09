@@ -99,7 +99,7 @@ const run = ref(false);
 const index = ref(0);
 
 const data = computed(() => [
-  ...useIndexStore().indices.flatMap(e => {
+  ...useIndexStore().list.flatMap(e => {
     return [
       `/${e.name}/_search`,
       ...e.alias.map(a => `/${a}/_search`)

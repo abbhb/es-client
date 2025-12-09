@@ -1,186 +1,66 @@
 <template>
-  <div class="table-viewer" :id="id">
-    <div class="table-view-toolbar">
-      <a-trigger trigger="click" :unmount-on-close="false" :popup-translate="[75, 3]">
-        <a-button type="outline" size="small">
-          <template #icon>
-            <icon-select-all/>
-          </template>
-          {{ `${showColumns.length} / ${columns.length}` }}
-        </a-button>
-        <template #content>
-          <div class="table-view-trigger">
-            <a-list style="width: 250px">
-              <template #header>
-                <a-button type="primary" size="small" @click="resetColumn">重置</a-button>
-              </template>
-              <a-scrollbar style="height: 341px;overflow: auto;">
-                <a-list-item v-for="(column, i) in columns" style="width: 250px;margin: 5px 3px;">
-                  <a-checkbox v-model="columns[i].show">{{ column.title }}</a-checkbox>
-                </a-list-item>
-              </a-scrollbar>
-            </a-list>
-          </div>
-        </template>
-      </a-trigger>
-    </div>
-    <div class="table-view-wrap">
-      <a-table :columns="showColumns" :data="records" :expandable="expandable" hoverable column-resizable
-               scrollbar :scroll="scroll" :pagination="false" row-key="_id" :bordered="bordered"/>
-    </div>
-  </div>
+  <vxe-table
+    ref="tableRef"
+    :data="records"
+    :height="height"
+    :column-config="columnConfig"
+    :row-config="rowConfig"
+    empty-text="什么也没有"
+  >
+    <vxe-column type="checkbox" width="60"></vxe-column>
+    <vxe-column type="expand" width="80" title="详细">
+      <template #content="{ row }">
+        <div class="expand-wrapper h-300px">
+          <MonacoView :value="row['_source']" />
+        </div>
+      </template>
+    </vxe-column>
+    <vxe-column
+      v-for="column in columns"
+      :key="column.title"
+      :field="column.field"
+      :title="column.title"
+      :visible="column.show"
+      :width="column.field === '_id' ? 180 : column.width"
+      show-overflow="tooltip"
+    />
+  </vxe-table>
 </template>
-<script lang="ts">
-import {TableBorder, TableColumnData, TableData, TableExpandable} from "@arco-design/web-vue";
-
+<script lang="ts" setup>
+import { searchResultToTable } from "$/elasticsearch-client/components/SearchResultToTable";
+import { columnConfig, rowConfig } from "@/page/data-browse/component/DbContainer/args";
 import MonacoView from "@/components/view/MonacoView/index.vue";
-import MessageUtil from "@/utils/model/MessageUtil";
-import {searchResultToTable} from "$/elasticsearch-client/components/SearchResultToTable";
-import {copyText} from "@/utils/BrowserUtil";
-import {DataSearchColumnConfig} from "@/domain/core";
+import { DataSearchColumnConfig } from "$/elasticsearch-client";
 
-
-export default defineComponent({
-  name: 'table-viewer',
-  props: {
-    value: {
-      type: String,
-      default: () => ""
-    },
-  },
-  components: {MonacoView},
-  data: () => {
-    let now = new Date().getTime();
-    return {
-      // 渲染表头
-      renderColumns: [] as Array<TableColumnData>,
-      // 映射表头
-      mappingColumns: [] as Array<TableColumnData>,
-      records: [] as Array<TableData>,
-      columns: [] as Array<DataSearchColumnConfig>,
-      emptyText: '空空如也',
-
-      oldIndex: '',
-
-      id: 'table-view-' + now,
-
-      // 配置
-      expandable: {
-        title: '源数据',
-        width: 80,
-        fixed: 'left',
-        expandedRowRender: (record: TableData) => {
-          return h(MonacoView, {
-            value: record['_source'],
-            height: '400px'
-          });
-        }
-      } as TableExpandable,
-      bordered: {wrapper: true, cell: true} as TableBorder,
-      scroll: {
-        x: '100%',
-        y: '100%'
-      },
-
-      allowUpdate: true,
-    }
-  },
-  watch: {
-    value() {
-      this.render();
-    }
-  }, computed: {
-    showColumns() {
-      return this.columns.filter(c => c.show).map(c => ({
-        dataIndex: c.field,
-        title: c.title,
-        width: c.width,
-        fixed: c.fixed,
-        ellipsis: true,
-        resizable: true,
-        sortable: true,
-        align: 'left'
-      }))
-    }
-  },
-  mounted() {
-    // 注册够渲染
-    this.render();
-  },
-  methods: {
-    render() {
-      // 当变化时，进行渲染
-      // 数据处理
-      if (!this.value || !this.value.trim()) {
-        this.columns = [];
-        this.records = [];
-        return;
-      }
-      let {columns, records} = searchResultToTable(this.value);
-      // 映射表头
-      this.columns = columns;
-      this.records = records;
-      // 数据清空
-      let x = 0;
-      this.columns.map((e: any) => e.width).forEach((e: any) => x += (e || 0));
-      this.scroll.x = `${x}px`;
-    },
-    copy(value: any) {
-      copyText(value);
-      MessageUtil.success("已成功复制到剪切板");
-    },
-    resetColumn() {
-      this.columns.forEach(c => {
-        c.show = true;
-      });
-    },
-  }
+const props = defineProps({
+  data: Object as PropType<string>,
+  height: { type: Number, default: 500 }
 });
+
+// 显示的列
+const columns = ref<Array<DataSearchColumnConfig>>([]);
+// 数据
+const records = ref<Array<Record<string, any>>>([]);
+const total = ref(0);
+
+watch(
+  () => props.data,
+  (value) => {
+    columns.value = [];
+    records.value = [];
+    total.value = 0;
+    if (value) {
+      const res = searchResultToTable(value);
+      columns.value = res.columns;
+      records.value = res.records;
+      total.value = res.total;
+    }
+  }
+);
 </script>
-<style lang="less">
-.table-viewer {
-  height: 100%;
-  width: 100%;
-  position: relative;
-  background-color: var(--color-bg-2);
-
-  .table-view-toolbar {
-    margin: 2px;
-    display: flex;
-
-    .arco-btn {
-      margin: 2px 0;
-    }
-
-    .arco-select {
-      width: 180px;
-      margin-left: 8px;
-    }
-  }
-
-  .table-view-wrap {
-    position: absolute;
-    top: 40px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-  }
-}
-
-.arco-table-container {
-  height: 100%;
-}
-
-.table-view-trigger {
-  width: 250px;
-  height: 400px;
-  background-color: var(--color-bg-1);
-  border-radius: var(--border-radius-small);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  display: flex;
-
-  .arco-list-header {
-    text-align: center;
-  }
-}
-</style>
+<script lang="ts">
+export default {
+  name: "TableViewer"
+};
+</script>
+<style scoped lang="less"></style>

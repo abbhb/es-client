@@ -24,6 +24,7 @@ function propertyHandle(
     const record: TableRecord = {
       name: [...parentName, key].join(".")
     };
+    // @ts-ignore
     const field = properties[key];
 
     Object.entries(field).map(([key, value]) => {

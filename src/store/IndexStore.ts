@@ -1,147 +1,258 @@
-import {defineStore} from "pinia";
-import {useUrlStore} from "@/store";
-import useLoadingStore from "@/store/LoadingStore";
+import { defineStore } from "pinia";
+import { useGlobalSettingStore, useUrlStore } from "@/store";
 import NotificationUtil from "@/utils/model/NotificationUtil";
-import {OrderType} from "@/store/components/HomeStore";
-import {ClusterNode} from "@/domain/index/ClusterInfo";
+import { ClusterNode, Field, IndexItem } from "$/elasticsearch-client";
+import { LoadingPlugin } from "tdesign-vue-next";
 import MessageUtil from "@/utils/model/MessageUtil";
-import {Field, IndexItem} from "$/elasticsearch-client";
+import { SelectOption } from "$/shared/common";
+import { encodeIndexType, encodeTypeField } from "$/elasticsearch-client/utils";
+import { IndexMapping } from "$/shared/elasticsearch";
+
+export interface IndexOption extends SelectOption {
+  // 标签
+  tag: "index" | "alias" | "custom";
+}
 
 function renderMap(indices: Array<IndexItem>): Map<string, IndexItem> {
-  let indicesMap = new Map<string, IndexItem>();
-  for (let index of indices) {
-    let names = [index.name, ...index.alias];
-    for (let name of names) {
+  const indicesMap = new Map<string, IndexItem>();
+  for (const index of indices) {
+    const names = [index.name, ...index.alias];
+    for (const name of names) {
       indicesMap.set(name, index);
     }
   }
   return indicesMap;
 }
 
-export const useIndexStore = defineStore('index', {
-  state: () => ({
-    // 集群信息
-    masterNode: '',
-    nodes: {} as Record<string, ClusterNode>,
-    // 全部的索引
-    indices: new Array<IndexItem>(),
-    indicesMap: new Map<string, IndexItem>(),
-    // 服务器名称
-    name: '',
-    active_shards: 0,
-    total_shards: 0,
-    status: '',
-    order: OrderType.NAME_ASC
-  }),
-  getters: {
-    /**
-     * 返回全部的链接
-     */
-    list: (state) => state.indices,
-    /**
-     * 索引映射
-     */
-    map: (state) => state.indicesMap,
-    indexAliasMap: (state): Map<string, string> => {
-      let aliasIndexMap = new Map<string, string>();
-      state.indices.forEach(index => {
-        aliasIndexMap.set(index.name, index.name);
-        [index.name, ...index.alias].forEach(alias => aliasIndexMap.set(alias, index.name));
-      });
-      return aliasIndexMap;
-    }
-  },
-  actions: {
-    /**
-     * 重新获取链接
-     */
-    async reset(): Promise<void> {
-      const {client} = useUrlStore();
-      if (!client) {
-        return Promise.reject('链接不存在');
+const buildItem = (
+  items: Set<IndexOption>,
+  names: Set<string>,
+  alias: Array<string>,
+  name: string,
+  showType: boolean,
+  type: string
+) => {
+  const indexValue = encodeIndexType(name, type);
+  names.add(indexValue);
+  items.add({
+    label: showType ? `${name} 「${type}」` : name,
+    value: indexValue,
+    tag: "index"
+  });
+  if (alias) {
+    for (const al of alias) {
+      const aliasName = showType ? `${al} 「${type}」` : al;
+      // 别名可能重复
+      const aliasValue = encodeIndexType(al, type);
+      if (!names.has(aliasValue)) {
+        names.add(aliasValue);
+        items.add({
+          label: aliasName,
+          value: aliasValue,
+          tag: "alias"
+        });
       }
-      // 清空数据
-      this.clear();
-      // 初始化时加载
-      useLoadingStore().start('准备索引信息中');
-      try {
-        useLoadingStore().setText('开始构建索引信息');
-        // 获取索引信息
-
-        const clusterInfo = await client.indices();
-
-        this.indices = clusterInfo.indices;
-        this.masterNode = clusterInfo.masterNode;
-        this.nodes = clusterInfo.nodes;
-        // 渲染map
-        this.indicesMap = renderMap(this.indices);
-
-        // 获取基本信息
-        client.clusterHealth().then(health => {
-          this.name = health.cluster_name;
-          this.active_shards = health.active_shards;
-          let unassigned_shards = health.unassigned_shards;
-          this.total_shards = this.active_shards + unassigned_shards;
-          this.status = health.status;
-        }).catch(e => NotificationUtil.error(e, '获取索引健康值失败'));
-
-
-        // 更新版本信息，但是只需要异步即可
-        client.info().then(overview => {
-          useUrlStore().update(Number(client.props.id), {
-            version: overview.version.number
-          }).catch(e => NotificationUtil.error(e, "更新版本信息失败"));
-        }).catch(e => NotificationUtil.error(e, "获取版本信息失败"));
-
-        this.sort(this.order);
-        return Promise.resolve();
-      } catch (e: any) {
-        useUrlStore().clear();
-        console.error(e);
-        MessageUtil.error("获取索引映射信息错误", e);
-        return Promise.reject(e);
-      } finally {
-        useLoadingStore().close();
-      }
-    },
-    clear() {
-      this.name = '';
-      this.masterNode = '';
-      this.nodes = {};
-      this.indices = new Array<IndexItem>();
-      this.indicesMap = new Map<string, IndexItem>();
-      this.active_shards = 0;
-      this.total_shards = 0;
-      this.status = '';
-    },
-    field(indexName: string | IndexItem | undefined): Array<Field> {
-      let indexView: IndexItem | undefined;
-      if (typeof indexName === 'string') {
-        indexView = this.indicesMap.get(indexName);
-      } else {
-        indexView = indexName;
-      }
-      if (indexView) {
-        return [{
-          indexType: 'index',
-          type: 'text',
-          value: '_id',
-          label: '_id'
-        }, ...Array.from(indexView.fields)]
-      }
-      return new Array<Field>;
-    },
-    sort(order: OrderType) {
-      this.order = order;
-      this.indices
-        .sort((a, b) => {
-          if (order === OrderType.NAME_ASC) {
-            return a.name.localeCompare(b.name, "zh-CN");
-          } else if (order === OrderType.NAME_DESC) {
-            return b.name.localeCompare(a.name, "zh-CN");
-          }
-          return 0;
-        })
     }
   }
+};
+
+export const useIndexStore = defineStore("index", () => {
+  const masterNode = ref<string>("");
+  const nodes = ref<Record<string, ClusterNode>>({});
+  const indices = ref<Array<IndexItem>>([]);
+  const indicesMap = ref<Map<string, IndexItem>>(new Map());
+  const name = ref<string>("");
+  const active_shards = ref<number>(0);
+  const total_shards = ref<number>(0);
+  const status = ref<string>("");
+
+  const list = computed(() => {
+    let idx = indices.value;
+
+    const { getHomeExcludeIndices, getHomeIncludeIndices } = useGlobalSettingStore();
+    if (getHomeIncludeIndices.length > 0) {
+      const his = getHomeIncludeIndices.map((e) => new RegExp(e));
+      idx = idx.filter((index) => his.some((e) => e.test(index.name)));
+    }
+    if (getHomeExcludeIndices.length > 0) {
+      const his = getHomeExcludeIndices.map((e) => new RegExp(e));
+      idx = idx.filter((index) => !his.some((e) => e.test(index.name)));
+    }
+
+    const { indexOrderBy } = useGlobalSettingStore();
+    return idx.sort((a, b) => {
+      if (indexOrderBy === "desc") {
+        return b.name.localeCompare(a.name, "zh");
+      }
+      return a.name.localeCompare(b.name, "zh");
+    });
+  });
+
+  /**
+   * 所有可进行搜索的索引
+   *
+   * @example value-index:type
+   */
+  const indexOptions = computed<Array<IndexOption>>(() => {
+    const items = new Set<IndexOption>();
+    const names = new Set<string>();
+    if (indices.value.length === 0) {
+      return Array.from(items);
+    }
+    for (const index of indices.value) {
+      const { alias, name, types } = index;
+      for (const type of types) {
+        buildItem(items, names, alias, name, types.length > 1, type);
+      }
+    }
+    return Array.from(items).sort((e1, e2) => e1.value.localeCompare(e2.value, "zh"));
+  });
+
+  /**
+   * 所有的字段项
+   * @example type:field
+   */
+  const fieldOptionMap = computed<Record<string, Array<Field>>>(() => {
+    const result: Record<string, Array<Field>> = {};
+    for (const index of indices.value) {
+      const { name, alias, fields, types } = index;
+      for (const item of [name, ...alias]) {
+        for (const type of types) {
+          const key = encodeIndexType(item, type);
+          result[key] = [
+            {
+              label: types.length === 1 ? "_id" : `${type}._id`,
+              value: encodeTypeField(type, "_id"),
+              type: "text",
+              indexType: type
+            },
+            ...fields
+          ];
+        }
+      }
+    }
+    return result;
+  });
+
+  /**
+   * mapping映射
+   * 所有支持的查询列表都在这
+   * @extends type:[index|alias] => mapping
+   */
+  const mappingMap = computed<Map<string, IndexMapping>>(() => {
+    const target = new Map<string, IndexMapping>();
+    for (const index of indices.value) {
+      const { name, alias, indexInfo, types } = index;
+      for (const item of [name, ...alias]) {
+        for (const type of types) {
+          target.set(encodeIndexType(item, type), indexInfo.mappings[type]);
+        }
+      }
+    }
+    return target;
+  });
+
+  async function reset(): Promise<void> {
+    const { client } = useUrlStore();
+    if (!client) {
+      return Promise.reject("链接不存在");
+    }
+    const old = useUrlStore().current;
+    clear();
+    const useLoading = LoadingPlugin({
+      content: "开始构建索引信息"
+    });
+    try {
+      const clusterInfo = await client.indices();
+      indices.value = clusterInfo.indices;
+      masterNode.value = clusterInfo.masterNode;
+      nodes.value = clusterInfo.nodes;
+      indicesMap.value = renderMap(indices.value);
+
+      client.clusterHealth()
+        .then((health) => {
+          name.value = health.cluster_name;
+          active_shards.value = health.active_shards;
+          const unassigned_shards = health.unassigned_shards;
+          total_shards.value = active_shards.value + unassigned_shards;
+          status.value = health.status;
+        })
+        .catch((e) => NotificationUtil.error(e, "获取索引健康值失败"));
+
+      return Promise.resolve();
+    } catch (e: any) {
+      if (useUrlStore().current === old) {
+        useUrlStore().clear();
+      }
+      console.error(e);
+      return Promise.reject(e);
+    } finally {
+      useLoading.hide();
+    }
+  }
+
+  function clear() {
+    name.value = "";
+    masterNode.value = "";
+    nodes.value = {};
+    indices.value = [];
+    indicesMap.value = new Map<string, IndexItem>();
+    active_shards.value = 0;
+    total_shards.value = 0;
+    status.value = "";
+  }
+
+  async function refreshIndex(index: IndexItem | string, remove = false) {
+    const { client } = useUrlStore();
+    if (!client) return MessageUtil.error("链接不存在");
+    const indexName = typeof index === "string" ? index : index.name;
+    for (let i = 0; i < indices.value.length; i++) {
+      if (indices.value[i].name === indexName) {
+        if (remove) {
+          indices.value.splice(i, 1);
+          return;
+        }
+        indices.value[i] = await client.getIndex(indexName);
+        return;
+      }
+    }
+    indices.value.push(await client.getIndex(indexName));
+  }
+
+  function updateIndex(indexName: string, onUpdate: (index: IndexItem) => void) {
+    for (let i = 0; i < indices.value.length; i++) {
+      if (indices.value[i].name === indexName) {
+        onUpdate(indices.value[i]);
+        return;
+      }
+    }
+  }
+
+  function removeIndex(indexName: string) {
+    for (let i = 0; i < indices.value.length; i++) {
+      if (indices.value[i].name === indexName) {
+        indices.value.splice(i, 1);
+        return;
+      }
+    }
+  }
+
+  return {
+    masterNode,
+    nodes,
+    indicesMap,
+    name,
+    active_shards,
+    total_shards,
+    status,
+    list,
+    indexOptions,
+    fieldOptionMap,
+    mappingMap,
+    reset,
+    clear,
+    refreshIndex,
+    updateIndex,
+    removeIndex
+  };
 });

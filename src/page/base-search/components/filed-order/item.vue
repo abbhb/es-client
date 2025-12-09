@@ -7,7 +7,7 @@
     </a-switch>
     <a-select v-model="order.field" allow-search allow-create allow-clear placeholder="请选择排序字段"
               style="width: 250px;">
-        <a-option v-for="(field, idx1) in fields" :key="idx1" :label="field.name" :value="field.name"></a-option>
+        <a-option v-for="(field, idx1) in fields" :key="idx1" :label="field.label" :value="field.value"></a-option>
     </a-select>
     <a-select v-model="order.type" filterable placeholder="请选择排序条件"
               style="margin-left: 10px;width: 80px;">

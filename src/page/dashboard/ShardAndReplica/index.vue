@@ -72,7 +72,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {useIndexStore} from "@/store";
+import {useGlobalSettingStore, useIndexStore} from "@/store";
 import {showJson, showJsonDialogByAsync} from "@/utils/model/DialogUtil";
 import {Shard} from "@/domain/es/ClusterState";
 import {useFuse} from "@vueuse/integrations/useFuse";
@@ -90,9 +90,8 @@ interface IndexItem {
 
 }
 
-
 const keyword = ref('');
-const order = ref(useIndexStore().order);
+const order = ref(useGlobalSettingStore().indexOrderBy);
 const hasUnAssigned = ref(false);
 // 节点信息
 const nodeKeys = computed<Array<string>>(() => {
@@ -108,7 +107,7 @@ const masterNode = computed(() => useIndexStore().masterNode);
 const indices = computed(() => {
   hasUnAssigned.value = false;
   const items = new Array<IndexItem>();
-  useIndexStore().indices.forEach(index => {
+  useIndexStore().list.forEach(index => {
     const item: IndexItem = {
       name: index.name,
       nodes: {}
@@ -121,17 +120,17 @@ const indices = computed(() => {
           hasUnAssigned.value = true;
         }
         const value = shard.node || UNASSIGNED;
-        let temp = item.nodes[key];
+        let temp = item.nodes[value];
         if (!temp) {
-          item.nodes[key] = new Array<Shard | null>();
-          temp = item.nodes[key];
+          item.nodes[value] = new Array<Shard | null>();
+          temp = item.nodes[value];
         }
         temp.push(shard)
       }
     }
     items.push(item);
   });
-  return items;
+  return items.sort((a, b) => order.value === 'asc' ? a.name.localeCompare(b.name, "zh-CN") : b.name.localeCompare(a.name, "zh-CN"));
 });
 
 const {results} = useFuse(keyword, indices, {
@@ -143,8 +142,6 @@ const {results} = useFuse(keyword, indices, {
   }
 });
 const items = computed(() => results.value.map(e => e.item));
-
-watch(order, value => useIndexStore().sort(value));
 
 function openJsonDialog(shard: Shard | null) {
   if (shard) {

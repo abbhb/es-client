@@ -11,6 +11,7 @@ import {
 } from "@/utils/convert/data-browser-condition";
 import { useUmami } from "@/plugins/umami";
 import { formatJsonString } from '$/util'
+import {copyText} from "@/utils/BrowserUtil";
 
 export function buildContextMenuClickEvent(
   instance: Ref<VxeTableInstance | null>,
@@ -25,13 +26,13 @@ export function buildContextMenuClickEvent(
       case "copy":
         // 示例
         if (row && column) {
-          window.preload.copyText(row[column.field]);
+          copyText(row[column.field]);
           MessageUtil.info("已复制到剪贴板！");
         }
         break;
       case "copy-row":
         if (row) {
-          window.preload.copyText(row._source);
+          copyText(row._source);
           MessageUtil.info("已复制到剪贴板！");
         }
         break;

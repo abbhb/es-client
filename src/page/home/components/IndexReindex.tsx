@@ -1,11 +1,11 @@
 import {useIndexStore} from "@/store";
-import IndexView from "@/view/index/IndexView";
 import {Alert, Button, Form, FormItem, Modal, ModalReturn, Option, Select, Switch} from "@arco-design/web-vue";
 import MessageUtil from "@/utils/model/MessageUtil";
 import useLoadingStore from "@/store/LoadingStore";
 import {useEsRequest} from "@/plugins/native/axios";
 import {useSeniorSearchStore} from "@/store/components/SeniorSearchStore";
 import AppLink from "@/components/AppLink/AppLink.vue";
+import {IndexItem} from "$/elasticsearch-client";
 
 interface Config {
   index: string;
@@ -18,7 +18,7 @@ interface Config {
  */
 export function indexReindex(index: string) {
   // 全部的索引
-  const indices: Array<IndexView> = useIndexStore().indices;
+  const indices: Array<IndexItem> = useIndexStore().list;
   const config = ref<Config>({
     index: '',
     async: false

@@ -125,7 +125,7 @@ export default defineComponent({
   computed: {
     ...mapState(useGlobalStore, ['isDark', 'width']),
     maxWidth() {
-      return (this.width - 210) + 'px'
+      return (this.width.value - 210) + 'px'
     },
     indexStateBtn(): 'danger' | 'success' | 'primary' {
       if (this.index.state === 'open') {

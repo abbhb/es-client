@@ -1,15 +1,12 @@
 import {BaseSearchItemBody} from "@/page/base-search/domain/BaseSearchItem";
 import {BaseQuery} from "@/entity/BaseQuery";
 import BaseOrder from "@/entity/BaseOrder";
-import Field from "@/view/Field";
 import DocumentApi from "@/components/es/DocumentApi";
 import QueryConditionBuild from "@/page/base-search/algorithm/QueryConditionBuild";
 import MessageUtil from "@/utils/model/MessageUtil";
 import {baseSearchRecordService, useIndexManageEvent} from "@/global/BeanFactory";
-import {useIndexStore} from "@/store";
-import {useGlobalSettingStore} from "@/store";
+import {useGlobalSettingStore, useIndexStore, useUrlStore} from "@/store";
 import {BaseSearchRecord} from "@/entity/record/BaseSearchRecord";
-import {useUrlStore} from "@/store";
 import router from "@/plugins/router";
 import PageNameEnum from "@/enumeration/PageNameEnum";
 import BaseSearchHistory from "@/entity/history/BaseSearchHistory";
@@ -17,6 +14,7 @@ import BaseSearchJumpEvent from "@/entity/event/BaseSearchJumpEvent";
 import {DocumentSearchQuery} from "@/domain/es/DocumentSearchQuery";
 import {parseJsonWithBigIntSupport} from "$/util";
 import {Router} from "vue-router";
+import {Field} from "$/elasticsearch-client";
 
 function getDefaultBaseSearch(): BaseSearchItemBody {
   return {
@@ -42,9 +40,9 @@ export function clear() {
 
 watch(() => current.value.index, value => {
   if (value != null) {
-    fields.value = useIndexStore().field(value).sort((a, b) => {
-      return a.name.localeCompare(b.name, "zh-CN");
-    });
+    fields.value = useIndexStore().indicesMap.get(value)?.fields.sort((a, b) => {
+      return a.label.localeCompare(b.label, "zh-CN");
+    }) || [];
     current.value.page = 1;
     current.value.size = useGlobalSettingStore().pageSize;
     return;
@@ -96,9 +94,9 @@ export function openIndexManage() {
     MessageUtil.error('请先选择索引');
     return;
   }
-  let index = useIndexStore().indexAliasMap.get(current.value.index);
+  let index = useIndexStore().indicesMap.get(current.value.index);
   if (index) {
-    useIndexManageEvent.emit(index);
+    useIndexManageEvent.emit(index.name);
   } else {
     MessageUtil.warning(`索引【${current.value.index}】未找到`)
   }

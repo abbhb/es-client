@@ -45,7 +45,7 @@ import {baseSearchExecute, current, getBaseSearchCondition, openIndexManage} fro
 const indices = computed<Array<SelectOptionData>>(() => {
   let options = new Array<SelectOptionData>();
   let names = new Set<string>();
-  let indices = useIndexStore().indices;
+  let indices = useIndexStore().list;
   indices.forEach(e => {
     // 索引
     options.push({

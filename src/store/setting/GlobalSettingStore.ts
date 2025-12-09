@@ -29,6 +29,7 @@ export const useGlobalSettingStore = defineStore('global-setting', () => {
   const seniorDefaultViewer = computed((): ViewTypeEnum => Optional.ofNullable(globalSetting.value.seniorDefaultViewer).orElse(ViewTypeEnum.EDITOR));
   const trackTotalHitsMode = computed(() => globalSetting.value.trackTotalHitsMode);
   const trackTotalHitsValue = computed(() => globalSetting.value.trackTotalHitsValue);
+  const indexOrderBy = computed(() => globalSetting.value.indexOrderBy || 'asc');
 
   // track_total_hits
   const trackTotalHits = computed(() => {
@@ -88,6 +89,7 @@ export const useGlobalSettingStore = defineStore('global-setting', () => {
     trackTotalHitsValue,
     trackTotalHits,
     getLastUrl,
+    indexOrderBy,
 
     // Actions
     init,
