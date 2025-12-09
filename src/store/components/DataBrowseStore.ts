@@ -15,7 +15,7 @@ export interface DataBrowseTab extends SelectOption {
 
 type DataBrowserTab = UseDataBrowserInstance | UseDataBrowserQueryContent;
 
-export function decodeValue(value: string): { type: string, id: string } {
+export function decodeValue(value: string): { type: DataBrowserType, id: string } {
   const split = value.indexOf("-");
   const type = value.substring(0, split) as DataBrowserType;
   const id = value.substring(split + 1);
