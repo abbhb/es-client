@@ -2,14 +2,14 @@
   <div class="db-query-editor">
     <div class="header">
       <t-space size="small" class="items-center">
-        <t-button theme="success" variant="text" shape="square" size="small">
+        <t-button theme="success" variant="text" shape="square" size="small" @click="onPlay">
           <template #icon>
             <play-icon/>
           </template>
         </t-button>
         <t-button theme="success" variant="text" shape="square" size="small">
           <template #icon>
-            <history-icon />
+            <history-icon/>
           </template>
         </t-button>
         <div style="border-left: 2px solid var(--td-border-level-2-color);padding-left: 8px">解析器：</div>
@@ -21,13 +21,13 @@
       <t-space>
         <t-button theme="primary" variant="text" shape="square" size="small">
           <template #icon>
-            <questionnaire-icon />
+            <questionnaire-icon/>
           </template>
         </t-button>
       </t-space>
     </div>
     <div class="content">
-      <sql-editor v-model="content" />
+      <sql-editor v-model="content" ref="sqlEditor" @run="onRun"/>
     </div>
   </div>
 </template>
@@ -35,6 +35,7 @@
 import {HistoryIcon, PlayIcon, QuestionnaireIcon} from "tdesign-icons-vue-next";
 import {UseDataBrowserQueryContent} from "@/hooks";
 import SqlEditor from "@/components/SqlEditor/SqlEditor.vue";
+import {SqlEditorFunc} from "@/components/SqlEditor";
 
 const props = defineProps({
   tab: {
@@ -43,7 +44,29 @@ const props = defineProps({
   }
 });
 
-const {content, records, mode} = props.tab;
+const {content, records, mode, execute} = props.tab;
+
+const sqlEditor = ref<SqlEditorFunc>();
+
+const onRun = ({instance, index}: any) => {
+  console.log(instance, index)
+}
+
+const onPlay = () => {
+  const instance = sqlEditor.value?.getInstance();
+  if (!instance) return;
+  // 假设 editor 是你的 Monaco Editor 实例
+  const selection = instance.getSelection();
+  if (selection && !selection.isEmpty()) {
+    const selectedText = instance.getModel()?.getValueInRange(selection);
+    console.log('选中的文本:', selectedText);
+    if (selectedText) {
+      execute(selectedText);
+      return;
+    }
+  }
+  execute(content.value);
+}
 </script>
 <style scoped lang="less">
 .db-query-editor {

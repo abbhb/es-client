@@ -22,8 +22,7 @@ const props = defineProps({
   }
 });
 
-
-const size = ref(0);
+const {size} = props.tab;
 </script>
 <style scoped lang="less">
 

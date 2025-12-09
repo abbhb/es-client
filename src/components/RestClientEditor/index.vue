@@ -107,12 +107,19 @@ onMounted(() => {
     },
   });
 
+
+
+  watch(isDark, value => {
+    instance.updateOptions({theme: value ? 'vs-dark' : 'vs'});
+  })
+
 });
 
 onBeforeUnmount(() => {
   if (codeLensProviderDisposable) {
     codeLensProviderDisposable.dispose();
     codeLensProviderDisposable = null;
+    instance?.dispose();
   }
 });
 

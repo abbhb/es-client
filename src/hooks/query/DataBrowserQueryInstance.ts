@@ -1,11 +1,13 @@
-import { TableColumn } from "$/shared/common/TableColumn";
-import { searchResultToTable } from "@/core/elasticsearch-client/components/SearchResultToTable";
-import { stringifyJsonWithBigIntSupport } from "@/core/util";
-import { conditionToES, ExprFunctionCall, parseSQL } from "@/core/util/file/SqlParser";
-import { useGlobalSettingStore, useUrlStore } from "@/store";
-import type { Ref } from "vue";
+import {TableColumn} from "$/shared/common/TableColumn";
+import {searchResultToTable} from "@/core/elasticsearch-client/components/SearchResultToTable";
+import {stringifyJsonWithBigIntSupport} from "@/core/util";
+import {conditionToES, ExprFunctionCall, parseSQL, Query} from "@/core/util/file/SqlParser";
+import {useGlobalSettingStore, useUrlStore} from "@/store";
+import type {Ref} from "vue";
+import MessageUtil from "@/utils/model/MessageUtil";
 
 export interface UseDataBrowserQueryInstance {
+  id: string;
   // 查询内容
   sql: string;
 
@@ -22,10 +24,14 @@ export interface UseDataBrowserQueryInstance {
   pageSize: Ref<number>;
 
   /**
-   * 运行查询语句
-   * @param sql 查询语句
+   * 下一页
    */
-  run(sql: string): Promise<void>;
+  next(): Promise<void>;
+
+  /**
+   * 上一页
+   */
+  prefix(): Promise<void>;
 
 }
 
@@ -55,9 +61,9 @@ function renderFunctionCall(expr: ExprFunctionCall, record: Record<string, any>)
   }
 }
 
-export function useDataBrowserQueryInstance(sql: string): UseDataBrowserQueryInstance {
+export function useDataBrowserQueryInstance(sql: string, id: string): UseDataBrowserQueryInstance {
 
-
+  let parse = true;
   const loading = ref(false);
   // 显示的列
   const columns = ref<Array<TableColumn>>([]);
@@ -70,40 +76,50 @@ export function useDataBrowserQueryInstance(sql: string): UseDataBrowserQueryIns
   // 每页记录数
   const pageSize = ref(useGlobalSettingStore().pageSize);
 
+  const dsl: Record<string, any> = {};
+  let query: Query | null = null;
+
+  try {
+    // 第一步解析查询
+    const query = parseSQL(sql);
+    // 第二部，将查询语句转为DSL
+    if (query.where) {
+      dsl.query = conditionToES(query.where);
+    } else {
+      // 默认查询全部
+      dsl.query = {
+        bool: {
+          must: [],
+          must_not: [],
+          should: [],
+        },
+      };
+    }
+    // 第三步，处理track_total_hits
+    const {versionFirst} = useUrlStore();
+    const {trackTotalHitsMode, trackTotalHitsValue} = useGlobalSettingStore();
+    if (versionFirst >= 7) {
+      if (trackTotalHitsMode === "custom") {
+        dsl.track_total_hits = trackTotalHitsValue;
+      } else {
+        dsl.track_total_hits = trackTotalHitsMode === "true";
+      }
+    }
+  } catch (e) {
+    MessageUtil.error(`解析「${sql}」失败`, e)
+    parse = false;
+  }
+
   async function run() {
+    if (!query) return MessageUtil.error(`请先解析SQL「${sql}」`);
     if (loading.value) return;
     loading.value = true;
     try {
-      // 第一步解析查询
-      const query = parseSQL(sql);
-      // 第二部，将查询语句转为DSL
-      let dsl: Record<string, any> = {}
-      if (query.where) {
-        dsl.query = conditionToES(query.where);
-      } else {
-        // 默认查询全部
-        dsl.query = {
-          bool: {
-            must: [],
-            must_not: [],
-            should: [],
-          },
-        };
-      }
-      // 第三步，添加分页
+      // 第四步，添加分页
       dsl.from = (pageNum.value - 1) * pageSize.value;
       dsl.size = pageSize.value;
-      // 第四步，处理track_total_hits
-      const { client, versionFirst } = useUrlStore();
-      const { trackTotalHitsMode, trackTotalHitsValue } = useGlobalSettingStore();
-      if (versionFirst >= 7) {
-        if (trackTotalHitsMode === "custom") {
-          dsl.track_total_hits = trackTotalHitsValue;
-        } else {
-          dsl.track_total_hits = trackTotalHitsMode === "true";
-        }
-      }
       // 第四步，执行查询
+      const {client} = useUrlStore();
       if (!client) return Promise.reject(new Error("请先连接ES"));
       const res = await client.seniorSearch({
         method: 'POST',
@@ -125,7 +141,7 @@ export function useDataBrowserQueryInstance(sql: string): UseDataBrowserQueryIns
         // 需要遍历select，去寻找别名，并且还要支持方法
         const c = new Array<TableColumn>();
         query.select.forEach(item => {
-          const { expr, alias } = item;
+          const {expr, alias} = item;
           switch (expr.type) {
             case "Star":
             case "QualifiedStar":
@@ -156,14 +172,38 @@ export function useDataBrowserQueryInstance(sql: string): UseDataBrowserQueryIns
         columns.value = c;
         records.value = r;
       }
+    } catch (e) {
+      MessageUtil.error(`运行「${sql}」失败`, e)
     } finally {
       loading.value = false;
     }
   }
 
-  run().then(()=>console.debug("运行成功")).catch(e => console.error("运行失败", e));
+  if (parse) {
+    // 第一次运行
+    run().then(() => console.debug("运行成功")).catch(e => MessageUtil.error(`运行「${sql}」失败`, e));
+  }
+
+  function next() {
+    if (!parse) return Promise.reject(new Error("请先解析SQL"));
+    pageNum.value++;
+    if (pageNum.value > total.value / pageSize.value) {
+      pageNum.value = total.value / pageSize.value;
+    }
+    return run();
+  }
+
+  function prefix() {
+    if (!parse) return Promise.reject(new Error("请先解析SQL"));
+    pageNum.value--;
+    if (pageNum.value < 1) {
+      pageNum.value = 1;
+    }
+    return run();
+  }
 
   return {
+    id,
     sql,
     loading,
     columns,
@@ -171,7 +211,8 @@ export function useDataBrowserQueryInstance(sql: string): UseDataBrowserQueryIns
     total,
     pageNum,
     pageSize,
-    run,
+    next,
+    prefix
   };
 
 

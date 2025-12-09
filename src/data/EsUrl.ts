@@ -20,3 +20,7 @@ export const URL_REGEX = /^\s*(HEAD|head|GET|get|POST|post|PUT|put|DELETE|delete
 export const JSON_REGEX = /^\s*(\{[\s\S]*}|\[[\s\S]*])\s*$/;
 export const COMMENT_REGEX = /^\s*\/\/.*/;
 export const BLANK_REGEX = /^\s*$/;
+
+
+// URL正则匹配
+export const SQL_REGEX = /^\s*(SELECT)\s+(.+)\s*/i;

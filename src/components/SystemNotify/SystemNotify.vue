@@ -122,7 +122,6 @@ const recomputeUnreadBadge = () => {
 };
 
 const maybeNotifyOnce = () => {
-  console.log("maybeNotifyOnce")
   if (firstPageNotified.value) return;
   const unread = sortedItems.value.filter(a => isUnread(a.id));
   if (unread.length === 0) {
