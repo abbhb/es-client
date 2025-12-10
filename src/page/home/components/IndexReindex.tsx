@@ -1,5 +1,5 @@
 import {useIndexStore} from "@/store";
-import {Alert, Button, Form, FormItem, Modal, ModalReturn, Option, Select, Switch} from "@arco-design/web-vue";
+import {Alert, Button, Form, FormItem, DialogPlugin, DialogInstance, Option, Select, Switch} from "tdesign-vue-next";
 import MessageUtil from "@/utils/model/MessageUtil";
 import useLoadingStore from "@/store/LoadingStore";
 import {useEsRequest} from "@/plugins/native/axios";
@@ -24,10 +24,10 @@ export function indexReindex(index: string) {
     async: false
   });
 
-  let modalReturn = Modal.open({
+  let modalReturn = DialogPlugin({
     // TODO: 此处bete
-    title: `索引【${index}】迁移（beta）`,
-    content: () => <>
+    header: `索引【${index}】迁移（beta）`,
+    default: () => <>
       <Alert title={"想可视化 Reindex？"}>
         <span>🔜 </span>
         <AppLink event="Reindex"/>
@@ -39,32 +39,32 @@ export function indexReindex(index: string) {
         如果 Mapping 中字段已经定义就不能修改其字段的类型等属性了，同时也不能改变分片的数量，
         可以使用 Reindex API 来解决这个问题。
       </div>
-      <Form model={config.value} layout="vertical">
+      <Form data={config.value} layout="vertical">
         <FormItem label="目标索引">
-          <Select v-model={config.value.index} allowSearch allowClear>
+          <Select v-model={config.value.index} filterable clearable>
             {indices.map(item =>
-              <Option key={item.name} value={item.name}
+              <Option key={item.name} value={item.name} label={item.name}
                       disabled={item.name === index}>{item.name}</Option>)}
           </Select>
         </FormItem>
         <FormItem label="是否异步">
           {{
-            default: () => <Switch v-model={config.value.async} type="round"/>,
+            default: () => <Switch v-model={config.value.async} />,
             help: () => <span>如果索引数据量较大，建议开启异步，以免造成请求超时。</span>
           }}
         </FormItem>
       </Form>
     </>,
     footer: () => <>
-      <Button type="text" onClick={() => jumpTo(index, config, modalReturn)}>跳转到高级查询</Button>
-      <Button onClick={() => modalReturn.close()}>取消</Button>
-      <Button type="primary" onClick={() => onOk(index, config, modalReturn)}>执行</Button>
+      <Button variant="text" theme={"primary"} onClick={() => jumpTo(index, config, modalReturn)}>跳转到高级查询</Button>
+      <Button onClick={() => modalReturn.destroy()}>取消</Button>
+      <Button theme="primary" onClick={() => onOk(index, config, modalReturn)}>执行</Button>
     </>,
     draggable: true,
   });
 }
 
-function jumpTo(index: string, config: Ref<Config>, modalReturn: ModalReturn) {
+function jumpTo(index: string, config: Ref<Config>, modalReturn: DialogInstance) {
   useSeniorSearchStore().loadEvent({
     method: 'POST',
     link: '_reindex' + (config.value.async ? '?wait_for_completion=false' : ''),
@@ -73,10 +73,10 @@ function jumpTo(index: string, config: Ref<Config>, modalReturn: ModalReturn) {
     "dest": {"index": "${config.value.index}"}
 }`
   });
-  modalReturn.close();
+  modalReturn.destroy();
 }
 
-function onOk(index: string, config: Ref<Config>, modalReturn: ModalReturn) {
+function onOk(index: string, config: Ref<Config>, modalReturn: DialogInstance) {
   if (config.value.index == '') {
     MessageUtil.warning("请选择目标索引");
     return;
@@ -93,6 +93,6 @@ function onOk(index: string, config: Ref<Config>, modalReturn: ModalReturn) {
     .catch(e => MessageUtil.error("迁移失败", e))
     .finally(() => {
       useLoadingStore().close();
-      modalReturn.close();
+      modalReturn.destroy();
     })
 }

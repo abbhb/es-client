@@ -1,40 +1,40 @@
 <template>
-  <a-layout id="app">
+  <t-layout class="w-100vw h-100vh m-0 p-0">
     <!-- 顶部菜单栏 -->
     <app-header/>
-    <!-- 主页面 -->
-    <a-layout id="main">
-      <app-side/>
-      <!-- 内容-->
-      <a-layout-content>
-        <a-spin :loading="loading" :tip="text">
-          <router-view/>
-        </a-spin>
-      </a-layout-content>
-    </a-layout>
-  </a-layout>
+    <t-content>
+      <!-- 主页面 -->
+      <t-layout style="width: 100vw;height: calc(100vh - 41px);">
+        <app-side/>
+        <!-- 内容-->
+        <t-content class="relative">
+          <t-loading :loading="loading" :tip="text" class="relative w-full h-full"
+                     style="background-color: var(--td-bg-color-container)">
+            <router-view/>
+          </t-loading>
+        </t-content>
+      </t-layout>
+    </t-content>
+  </t-layout>
   <!-- 索引管理 -->
   <index-manage/>
 </template>
 
 <script lang="ts" setup>
 // 引入状态管理
-import {useGlobalSettingStore} from "@/store";
+import {useGlobalSettingStore, useIndexStore, useUrlStore} from "@/store";
 import useLoadingStore from "@/store/LoadingStore";
 import {useColorMode} from "@/hooks";
-import {useUrlStore} from "@/store";
 import useEditorSettingStore from "@/store/setting/EditorSettingStore";
-import {useBackupSettingStore} from "@/store/setting/BackupSettingStore";
-import {useIndexStore} from "@/store";
 import PageNameEnum from "@/enumeration/PageNameEnum";
 import LocalNameEnum from "@/enumeration/LocalNameEnum";
 import {versionManager, VersionStatus} from "@/components/version-manager";
 import {getItemByDefault} from "@/utils/utools/DbStorageUtil";
 import Assert from "@/utils/Assert";
 import {showVersionUpdateDialog} from "@/module/version-update";
-import AppHeader from  "@/module/app-header/index.vue";
+import AppHeader from "@/module/app-header/index.vue";
 import AppSide from "@/module/app-sider/index.vue";
-import IndexManage  from '@/module/index-manage/index.vue';
+import IndexManage from '@/module/index-manage/index.vue';
 
 const router = useRouter();
 
@@ -47,7 +47,6 @@ async function initData(): Promise<void> {
     // 设置
     useGlobalSettingStore().init(),
     useEditorSettingStore().init(),
-    useBackupSettingStore().init()
   ]);
   return Promise.resolve();
 }

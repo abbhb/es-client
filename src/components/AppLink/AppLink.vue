@@ -1,5 +1,5 @@
 <template>
-  <a-link :href="Constant.url.home" target="_blank" @click="onClick">App 专业版</a-link>
+  <t-link :href="Constant.url.home" theme="primary" hover="underline" target="_blank" @click="onClick">App 专业版</t-link>
 </template>
 <script lang="ts" setup>
 import {Constant} from "@/global/Constant";

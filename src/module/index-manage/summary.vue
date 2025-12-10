@@ -1,31 +1,30 @@
 <template>
-  <a-spin :loading="loading" tip="数据查询中">
-    <a-descriptions title="概览" :column="2" class="index-manage-summary" bordered>
-      <a-descriptions-item label="健康">
+  <t-loading :loading="loading" text="数据查询中">
+    <t-descriptions title="概览" :column="2" class="index-manage-summary" bordered>
+      <t-descriptions-item label="健康">
         <div class="health">
           <div class="dot" :style="{ backgroundColor: health }"/>
           <div>{{ health }}</div>
         </div>
-      </a-descriptions-item>
-      <a-descriptions-item label="状态">{{ state }}</a-descriptions-item>
-      <a-descriptions-item label="节点数">{{ numberOfNodes }}</a-descriptions-item>
-      <a-descriptions-item label="数据节点数">{{ numberOfDataNodes }}</a-descriptions-item>
-      <a-descriptions-item label="活动主要分片">{{ activePrimaryShards }}</a-descriptions-item>
-      <a-descriptions-item label="活动分片">{{ activeShards }}</a-descriptions-item>
-      <a-descriptions-item label="relocating分片">{{ relocatingShards }}</a-descriptions-item>
-      <a-descriptions-item label="initializing分片">{{ initializingShards }}</a-descriptions-item>
-      <a-descriptions-item label="unassigned分片">{{ unassignedShards }}</a-descriptions-item>
-      <a-descriptions-item label="别名">
-                <span class="arco-tag arco-tag-size-medium arco-tag-blue arco-tag-checked summary-alias"
-                      v-for="(item, idx) in aliasItems" :key="idx" style="margin-right: 5px">
-                    {{ item }}
-                    <icon-close :size="16" @click="removeAlias(item)" class="alias-close"/>
-                </span>
-        <a-button type="primary" status="normal" size="mini" @click="newAlias()">新增
-        </a-button>
-      </a-descriptions-item>
-    </a-descriptions>
-  </a-spin>
+      </t-descriptions-item>
+      <t-descriptions-item label="状态">{{ state }}</t-descriptions-item>
+      <t-descriptions-item label="节点数">{{ numberOfNodes }}</t-descriptions-item>
+      <t-descriptions-item label="数据节点数">{{ numberOfDataNodes }}</t-descriptions-item>
+      <t-descriptions-item label="活动主要分片">{{ activePrimaryShards }}</t-descriptions-item>
+      <t-descriptions-item label="活动分片">{{ activeShards }}</t-descriptions-item>
+      <t-descriptions-item label="relocating分片">{{ relocatingShards }}</t-descriptions-item>
+      <t-descriptions-item label="initializing分片">{{ initializingShards }}</t-descriptions-item>
+      <t-descriptions-item label="unassigned分片">{{ unassignedShards }}</t-descriptions-item>
+      <t-descriptions-item label="别名" :span="2">
+        <t-tag theme="primary" closable @close="removeAlias(item)" variant="outline"
+               v-for="(item, idx) in aliasItems" :key="idx" style="margin-right: 5px">
+          {{ item }}
+        </t-tag>
+        <t-button theme="primary" size="small" @click="newAlias()">新增
+        </t-button>
+      </t-descriptions-item>
+    </t-descriptions>
+  </t-loading>
 </template>
 <script lang="ts">
 import {useIndexStore} from "@/store";

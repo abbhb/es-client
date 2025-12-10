@@ -1,9 +1,9 @@
 <template>
-  <a-alert :title>
+  <t-alert :title>
     <span>🚀 </span>
     <AppLink :event/>
     <span>{{content}}</span>
-  </a-alert>
+  </t-alert>
 </template>
 <script lang="ts" setup>
 defineProps({

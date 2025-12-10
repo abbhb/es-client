@@ -1,17 +1,13 @@
 <template>
   <div class="shard-and-replica">
     <div class="header">
-      <a-input-group>
-        <a-input style="width: 350px;" v-model="keyword" allow-clear>
+      <t-input-group>
+        <t-input style="width: 350px;" v-model="keyword" clearable>
           <template #suffix>
-            <icon-search/>
+            <search-icon />
           </template>
-        </a-input>
-        <a-select v-model="order" placeholder="索引排序" style="width: 120px;margin-left: 7px;">
-          <a-option :value="OrderType.NAME_ASC">名称正序</a-option>
-          <a-option :value="OrderType.NAME_DESC">名称倒序</a-option>
-        </a-select>
-      </a-input-group>
+        </t-input>
+      </t-input-group>
     </div>
     <div class="container">
       <!-- 标题 -->
@@ -20,42 +16,44 @@
           <div class="name"></div>
         </div>
         <div class="shards">
-          <a-typography v-for="node in nodeKeys" class="shard-title">
-            <a-typography-paragraph class="icon">
-              <a-tooltip content="主节点" v-if="node === masterNode">
+          <div v-for="node in nodeKeys" class="shard-title">
+            <t-typography-paragraph class="icon">
+              <t-tooltip content="主节点" v-if="node === masterNode">
                 <icon-star-fill style="color: rgb(var(--arcoblue-6));"/>
-              </a-tooltip>
-              <a-tooltip content="未分配的节点" v-else-if="node === UNASSIGNED">
+              </t-tooltip>
+              <t-tooltip content="未分配的节点" v-else-if="node === UNASSIGNED">
                 <icon-exclamation-circle-fill style="color: rgb(var(--red-6));"/>
-              </a-tooltip>
+              </t-tooltip>
               <!-- 标准节点 -->
-              <a-tooltip content="工作节点" v-else>
+              <t-tooltip content="工作节点" v-else>
                 <icon-info-circle-fill/>
-              </a-tooltip>
-            </a-typography-paragraph>
-            <a-typography-paragraph bold>
-              <a-button type="text" v-if="node === UNASSIGNED">
+              </t-tooltip>
+            </t-typography-paragraph>
+            <t-typography-paragraph bold>
+              <t-button variant="text" theme="primary" v-if="node === UNASSIGNED">
                 {{ nodes[node] ? nodes[node].name : node }}
-              </a-button>
-              <a-dropdown-button position="br" v-else type="text" :title="node">
-                {{ nodes[node] ? nodes[node].name : node }}
-                <template #icon>
-                  <icon-down/>
-                </template>
-                <template #content>
-                  <a-doption @click="showClusterNode(node)">集群节点信息</a-doption>
-                  <a-doption @click="showNode(node)">节点信息</a-doption>
-                </template>
-              </a-dropdown-button>
-            </a-typography-paragraph>
-          </a-typography>
+              </t-button>
+              <t-dropdown placement="bottom-right" trigger="click" v-else :title="node">
+                <t-button variant="text" theme="primary">
+                  {{ nodes[node] ? nodes[node].name : node }}
+                  <template #suffix>
+                    <icon-down/>
+                  </template>
+                </t-button>
+                <t-dropdown-menu>
+                  <t-dropdown-item @click="showClusterNode(node)">集群节点信息</t-dropdown-item>
+                  <t-dropdown-item @click="showNode(node)">节点信息</t-dropdown-item>
+                </t-dropdown-menu>
+              </t-dropdown>
+            </t-typography-paragraph>
+          </div>
         </div>
       </div>
       <!-- 每一个索引 -->
       <div class="index" v-for="index in items" :key="index.name">
         <div class="info">
           <div class="name">
-            <a-link class="link" @click="openIndexInfo(index.name)">{{ index.name }}</a-link>
+            <t-link theme="primary" class="link" @click="openIndexInfo(index.name)">{{ index.name }}</t-link>
           </div>
         </div>
         <!-- 每一个副本 -->
@@ -77,10 +75,10 @@ import {showJson, showJsonDialogByAsync} from "@/utils/model/DialogUtil";
 import {Shard} from "@/domain/es/ClusterState";
 import {useFuse} from "@vueuse/integrations/useFuse";
 import {useIndexManageEvent} from "@/global/BeanFactory";
-import {OrderType} from "@/store/components/HomeStore";
 import {ClusterNode} from "@/domain/index/ClusterInfo";
 import {stringifyJsonWithBigIntSupport} from "$/util";
 import MessageUtil from "@/utils/model/MessageUtil";
+import {SearchIcon} from "tdesign-icons-vue-next";
 
 const UNASSIGNED = "Unassigned";
 

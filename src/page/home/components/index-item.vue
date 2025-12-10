@@ -9,13 +9,11 @@
     </div>
     <!-- 别名 -->
     <div class="alias">
-      <t-space v-if="index.alias && index.alias.length > 0" size="small" class="mr-8px">
-        <div class="arco-tag arco-tag-size-medium arco-tag-blue arco-tag-checked"
-             v-for="(item, idx) in index.alias" :key="idx">
-          {{ item }}
-          <icon-close :size="16" @click="removeAlias(item)" class="alias-close"/>
-        </div>
-      </t-space>
+
+      <t-tag theme="primary" closable @close="removeAlias(item)" variant="outline"
+             v-for="(item, idx) in index.alias" :key="idx" style="margin-right: 8px">
+        {{ item }}
+      </t-tag>
       <t-button theme="primary" size="small" @click="newAlias()">新增
       </t-button>
     </div>

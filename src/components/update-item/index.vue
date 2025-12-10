@@ -9,35 +9,34 @@
           </li>
         </ol>
         <li v-else>
-          <a-tag :color="renderTag(item.label).color" style="margin-left:5px;">
+          <t-tag :theme="renderTag(item.label).color" style="margin-left:5px;padding-left: 6px;padding-right: 6px">
             {{ renderTag(item.label).name }}
-          </a-tag>
+          </t-tag>
           <span style="margin-left:5px;">{{ item.content }}</span>
-          <span v-if="item.txc"><a-link @click="open(item.txc)">@兔小巢</a-link></span>
+          <span v-if="item.txc"><t-link @click="open(item.txc)">@兔小巢</t-link></span>
           <span v-else-if="item.gitee">
-                        <a-link @click="open(item.gitee.content)">
-                            #{{ item.gitee.title }}
-                        </a-link>
-                    </span>
+            <t-link @click="open(item.gitee.content)">
+              #{{ item.gitee.title }}
+            </t-link>
+          </span>
           <span v-else-if="item.pull">
-                    <a-tooltip content="贡献者">
-                        <a-link status="success" @click="open(item.pull?.url)">@ {{ item.pull?.name }}</a-link>
-                    </a-tooltip>
-                </span>
+            <t-tooltip content="贡献者">
+              <t-link status="success" @click="open(item.pull?.url)">@ {{ item.pull?.name }}</t-link>
+            </t-tooltip>
+          </span>
         </li>
       </template>
     </ol>
-    <a-typography-paragraph v-if="log.remark">{{ log.remark }}</a-typography-paragraph>
+    <t-typography-paragraph v-if="log.remark">{{ log.remark }}</t-typography-paragraph>
     <div v-if="log.doc">
       更多详细的更新信息与功能变化，请在
-      <a-link target="_blank" @click="open(log?.doc)">此处</a-link>
+      <t-link target="_blank" @click="open(log?.doc)">此处</t-link>
       中查看
     </div>
   </div>
 </template>
 <script lang="ts">
 import {Log, LogItemEnum} from "@/view/Data";
-import {Link, Tag, Tooltip, TypographyParagraph} from "@arco-design/web-vue";
 import {openUrl} from "@/utils/BrowserUtil";
 
 export default defineComponent({
@@ -45,39 +44,33 @@ export default defineComponent({
   props: {
     log: Object as PropType<Log>
   },
-  components: {
-    "a-tag": Tag,
-    "a-typography-paragraph": TypographyParagraph,
-    "a-tooltip": Tooltip,
-    "a-link": Link
-  },
   methods: {
-    renderTag(value: number): { name: string, color: string } {
+    renderTag(value: number): { name: string, color: "default" | "primary" | "success" | "warning" | "danger" } {
       switch (value) {
         case LogItemEnum.ADD:
           return {
             name: '新增',
-            color: 'blue'
+            color: 'primary'
           };
         case LogItemEnum.UPDATE:
           return {
             name: '更新',
-            color: 'green'
+            color: 'success'
           };
         case LogItemEnum.REPAIR:
           return {
             name: '修复',
-            color: 'red'
+            color: 'danger'
           };
         case LogItemEnum.OPTIMIZATION:
           return {
             name: '优化',
-            color: 'orange'
+            color: 'warning'
           };
         default:
           return {
             name: '',
-            color: ''
+            color: 'default'
           };
       }
     },

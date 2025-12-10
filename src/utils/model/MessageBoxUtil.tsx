@@ -1,144 +1,139 @@
-import {Input, Modal} from "@arco-design/web-vue";
-import Optional from "@/utils/Optional";
-
-
-interface PromptOption {
-  confirmButtonText: string,
-  cancelButtonText: string,
-  inputPattern: RegExp,
-  inputErrorMessage: string,
-  inputValue: string
-}
+import { DialogPlugin, Input, Paragraph } from "tdesign-vue-next";
 
 export default {
-
-  confirm(content: string, title: string, config?: {
-    confirmButtonText?: string,
-    cancelButtonText?: string
-  }): Promise<void> {
+  confirm(
+    content: string,
+    title: string,
+    config?: Partial<{
+      confirmButtonText: string;
+      cancelButtonText: string;
+    }>
+  ): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      Modal.confirm({
-        content,
-        title,
+      const p = DialogPlugin({
+        default: content,
+        header: title,
         draggable: true,
-        okText: config ? config.confirmButtonText : undefined,
-        cancelText: config ? config.cancelButtonText : undefined,
-        onOk: () => {
+        placement: "center",
+        confirmBtn: {
+          default: config?.confirmButtonText || ""
+        },
+        cancelBtn: {
+          default: config?.cancelButtonText || ""
+        },
+        onConfirm: () => {
+          p.destroy();
           resolve();
         },
         onCancel: () => {
-          reject('cancel');
+          p.destroy();
+          reject("cancel");
         },
         onClose: () => {
-          reject('close');
+          p.destroy();
+          reject("close");
         }
-      })
-    })
+      });
+    });
   },
 
-  alert(content: string, title: string | null, config?: {
-    confirmButtonText?: string,
-    cancelButtonText?: string
-  }): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      Modal.confirm({
-        content,
-        title: Optional.ofNullable(title).orElse("警告"),
+  alert(
+    content: string,
+    title?: string,
+    config?: {
+      confirmButtonText?: string;
+      cancelButtonText?: string;
+    }
+  ) {
+    const { confirmButtonText = "确认", cancelButtonText = "取消" } = config || {};
+    return new Promise<void>((resolve) => {
+      const res = DialogPlugin({
+        default: () => <Paragraph>{content}</Paragraph>,
+        top: "auto",
+        header: title,
         draggable: true,
-        okText: Optional.ofNullable(config).map(e => e.confirmButtonText).orElse('确定'),
-        cancelText: Optional.ofNullable(config).map(e => e.cancelButtonText).orElse('取消'),
-        onOk: () => {
+        confirmBtn: {
+          default: confirmButtonText
+        },
+        cancelBtn: {
+          default: cancelButtonText
+        },
+        onConfirm: () => {
           resolve();
+          res.destroy();
         },
-        onCancel: () => {
-          reject('cancel');
+        onCancel() {
+          res.destroy();
         },
-        onClose: () => {
-          reject('close');
+        onClose() {
+          res.destroy();
         }
-      })
-    })
+      });
+    });
   },
 
-  prompt(content: string, title: string, config?: Partial<PromptOption>): Promise<string> {
-    const option = config || {}
+  prompt(
+    content: string,
+    title?: string,
+    config?: {
+      confirmButtonText?: string;
+      cancelButtonText?: string;
+      inputPattern?: RegExp;
+      inputErrorMessage?: string;
+      inputValue?: string;
+      onClose?: () => void;
+    }
+  ): Promise<string> {
+    const {
+      inputValue = "",
+      confirmButtonText = "确认",
+      cancelButtonText = "取消",
+      onClose
+    } = config || {};
     return new Promise<string>((resolve, reject) => {
-      let value = Optional.ofNullable(option).map(e => e.inputValue).orElse("");
-      const onInput = (e: string) => {
-        value = e;
-      }
-      Modal.confirm({
-        content: () => <div class="domain-prompt">
-          <div>{content}</div>
-          <Input type="text" defaultValue={option.inputValue} onInput={(e: string) => onInput(e)}
-                 style={{marginTop: '8px'}} onVnodeMounted={(e: VNode) => (e.el as HTMLInputElement)
-            .getElementsByTagName("input")
-            .item(0)!
-            .focus()}/>
-        </div>,
-        title: title,
-        draggable: true,
-        okText: option.confirmButtonText,
-        cancelText: option.cancelButtonText,
-        onOk: () => {
-          resolve(value);
-        },
-        onCancel: () => {
-          reject('cancel');
-        },
-        onClose: () => {
-          reject('close');
-        }
-      })
-    })
-  },
+      const value = ref(inputValue);
 
-  password(content: string, title: string, config?: Partial<PromptOption>): Promise<{
-    username: string;
-    password: string;
-  }> {
-    const option = config || {}
-    return new Promise<{
-      username: string;
-      password: string;
-    }>((resolve, reject) => {
-      let value = {
-        username: '',
-        password: ''
-      };
-      const onUsernameInput = (e: string) => {
-        value.username = e;
+      function onKeydown(value: string | number) {
+        resolve(`${value}`);
+        res.destroy();
       }
-      const onPasswordInput = (e: string) => {
-        value.username = e;
-      }
-      Modal.confirm({
-        content: () => <div class="domain-prompt">
-          <div>{content}</div>
-          <Input type="text" onInput={(e: string) => onUsernameInput(e)} style={{marginTop: '8px'}}
-                 onVnodeMounted={(e: VNode) => {
-                   (e.el as HTMLInputElement)
-                     .getElementsByTagName("input")
-                     .item(0)!
-                     .focus();
-                 }}/>
-          <Input type="password" onInput={(e: string) => onPasswordInput(e)} style={{marginTop: '8px'}}/>
-        </div>,
-        title: title,
+
+      const res = DialogPlugin({
+        default: () => (
+          <div>
+            <Paragraph>{content}</Paragraph>
+            <Input
+              autofocus={true}
+              v-model={value.value}
+              clearable={true}
+              onEnter={onKeydown}
+            ></Input>
+          </div>
+        ),
+        header: title,
         draggable: true,
-        okText: option.confirmButtonText,
-        cancelText: option.cancelButtonText,
-        onOk: () => {
-          resolve(value);
+        placement: "center",
+        confirmBtn: {
+          default: confirmButtonText
         },
-        onCancel: () => {
-          reject('cancel');
+        cancelBtn: {
+          default: cancelButtonText
         },
-        onClose: () => {
-          reject('close');
+        onConfirm: () => {
+          resolve(value.value);
+          res.destroy();
+        },
+        onCancel() {
+          res.destroy();
+          reject("cancel");
+        },
+        onClose() {
+          res.destroy();
+          onClose && onClose();
+          console.log("onClose");
+          reject("cancel");
         }
-      })
-    })
+      });
+    });
   }
-
-}
+};

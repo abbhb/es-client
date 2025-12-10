@@ -5,7 +5,7 @@ import {conditionToES, ExprFunctionCall, parseSQL, Query} from "@/core/util/file
 import {useGlobalSettingStore, useUrlStore} from "@/store";
 import type {Ref} from "vue";
 import MessageUtil from "@/utils/model/MessageUtil";
-import {dayjs} from "@arco-design/web-vue/es/_utils/date";
+import dayjs from "dayjs";
 
 export interface UseDataBrowserQueryInstance {
   id: string;

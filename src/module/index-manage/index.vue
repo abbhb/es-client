@@ -1,47 +1,48 @@
 <template>
-  <a-drawer :title="index" class="index-manage-drawer" v-model:visible="drawer" :width="600" render-to-body
-            unmount-on-close popup-container="#main">
+  <t-drawer :header="index" class="index-manage-drawer" v-model:visible="drawer" size="960px" destroy-on-close>
     <div class="index-manage">
-      <a-tabs v-model:active-key="active" class="tab">
-        <a-tab-pane title="总览" key="1"/>
-        <a-tab-pane title="设置" key="2"/>
-        <a-tab-pane title="映射" key="3"/>
-        <a-tab-pane title="统计信息" key="4"/>
-      </a-tabs>
-      <a-spin :loading="loading" tip="加载中">
+      <t-tabs v-model="active" class="tab">
+        <t-tab-panel label="总览" value="1"/>
+        <t-tab-panel label="设置" value="2"/>
+        <t-tab-panel label="映射" value="3"/>
+        <t-tab-panel label="统计信息" value="4"/>
+      </t-tabs>
+      <t-loading :loading="loading" text="加载中" class="h-full">
         <div class="content">
-          <a-alert v-if="active === '3'" title="Mapping 看得头疼？" style="margin-bottom: 8px;">
+          <t-alert v-if="active === '3'" title="Mapping 看得头疼？" style="margin-bottom: 8px;">
             <span>🌳</span>
             <AppLink event="查看mapping"/>
             <span>用树形表格清晰展示 Mapping 结构，一目了然！</span>
-          </a-alert>
+          </t-alert>
           <monaco-view :value="pretty" v-show="jsonViewShow" read-only
                        :height="active === '3' ? 'calc(100vh - 268px)' : 'calc(100vh - 176px)'"/>
-          <index-manage-summary ref="indexManageSummary" v-show="!jsonViewShow" :index="index"
+          <index-manage-summary v-if="drawer" ref="indexManageSummary" v-show="!jsonViewShow" :index="index"
                                 :state="state"/>
         </div>
-      </a-spin>
+      </t-loading>
     </div>
     <template #footer>
-      <a-dropdown trigger="click" @select="indexManage">
-        <a-button type="primary">
+      <t-dropdown trigger="click" @select="indexManage">
+        <t-button theme="primary">
           管理
-          <icon-up/>
-        </a-button>
-        <template #content>
-          <a-doption value="open" v-if="state === 'close'">打开索引</a-doption>
-          <a-doption value="close" v-else-if="state === 'open'">关闭索引</a-doption>
-          <a-doption disabled value="merge">强制合并索引</a-doption>
-          <a-doption value="refresh">刷新索引</a-doption>
-          <a-doption value="clear">清除索引缓存</a-doption>
-          <a-doption value="flush">flush索引</a-doption>
-          <a-doption disabled value="freeze">冻结索引</a-doption>
-          <a-doption value="remove">删除索引</a-doption>
-          <a-doption disabled value="lifecycle">增加生命周期</a-doption>
-        </template>
-      </a-dropdown>
+          <template #suffix>
+            <chevron-up-icon/>
+          </template>
+        </t-button>
+        <t-dropdown-menu>
+          <t-dropdown-item value="open" v-if="state === 'close'">打开索引</t-dropdown-item>
+          <t-dropdown-item value="close" v-else-if="state === 'open'">关闭索引</t-dropdown-item>
+          <t-dropdown-item disabled value="merge">强制合并索引</t-dropdown-item>
+          <t-dropdown-item value="refresh">刷新索引</t-dropdown-item>
+          <t-dropdown-item value="clear">清除索引缓存</t-dropdown-item>
+          <t-dropdown-item value="flush">flush索引</t-dropdown-item>
+          <t-dropdown-item disabled value="freeze">冻结索引</t-dropdown-item>
+          <t-dropdown-item value="remove">删除索引</t-dropdown-item>
+          <t-dropdown-item disabled value="lifecycle">增加生命周期</t-dropdown-item>
+        </t-dropdown-menu>
+      </t-dropdown>
     </template>
-  </a-drawer>
+  </t-drawer>
 </template>
 <script lang="ts">
 import {contains} from "@/utils/ArrayUtil";
@@ -54,14 +55,14 @@ import Optional from "@/utils/Optional";
 import {mapState} from "pinia";
 import {useIndexManageEvent} from "@/global/BeanFactory";
 import MessageBoxUtil from "@/utils/model/MessageBoxUtil";
-import IndexMapping from "@/components/IndexMapping/index.vue";
 import MonacoEditor from "@/components/monaco-editor/index.vue";
-import {stringifyJsonWithBigIntSupport, formatJsonString} from "$/util";
+import {formatJsonString, stringifyJsonWithBigIntSupport} from "$/util";
+import {ChevronUpIcon} from "tdesign-icons-vue-next";
 
 export default defineComponent({
   name: 'index-manage',
   emits: ['update:modelValue'],
-  components: {MonacoEditor, IndexMapping, IndexManageSummary},
+  components: {ChevronUpIcon, MonacoEditor, IndexManageSummary},
   data: () => ({
     drawer: false,
     active: '1',
@@ -208,7 +209,7 @@ export default defineComponent({
 .index-manage-drawer {
   .index-manage {
     position: absolute;
-    top: 0;
+    top: 56px;
     left: 0;
     right: 0;
     bottom: 0;

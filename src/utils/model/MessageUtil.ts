@@ -1,29 +1,32 @@
-import {Message} from '@arco-design/web-vue';
+import { MessagePlugin } from "tdesign-vue-next";
 import Optional from "@/utils/Optional";
-import {stringifyJsonWithBigIntSupport} from "$/util";
+import { stringifyJsonWithBigIntSupport } from "$/util";
 
 function render(message: string, e?: any) {
-  if (typeof e === 'string') {
-    return Optional.ofNullable(e).map(e => `${message}，${e}`).orElse(message)
+  if (e instanceof Error) {
+    return Optional.ofNullable(e)
+      .map((e) => `${message}，${e.message}`)
+      .orElse(message);
   } else {
-    return Optional.ofNullable(e).map(e => `${message}，${e}`).orElse(message)
+    return Optional.ofNullable(e)
+      .map((e) => `${message}，${e}`)
+      .orElse(message);
   }
 }
 
 function success(message: any): void;
 function success(message: any, callback: () => void): void;
 function success(message: any, callback?: () => void): void {
-  Message.success({
-    closable: true,
-    content: typeof message === 'string' ? message : stringifyJsonWithBigIntSupport(message)
+  MessagePlugin.success({
+    closeBtn: true,
+    content: typeof message === "string" ? message : stringifyJsonWithBigIntSupport(message)
   });
   callback && callback();
 }
 
-
 function warning(message: string, e?: any): void {
-  Message.warning({
-    closable: true,
+  MessagePlugin.warning({
+    closeBtn: true,
     content: render(message, e)
   });
   console.error(message, e);
@@ -33,8 +36,8 @@ function error(message: string): void;
 function error(message: string, e: any): void;
 function error(message: string, e: any, callback: () => void): void;
 function error(message: string, e?: any, callback?: () => void): void {
-  Message.error({
-    closable: true,
+  MessagePlugin.error({
+    closeBtn: true,
     content: render(message, e)
   });
   console.error(message, e);
@@ -42,14 +45,13 @@ function error(message: string, e?: any, callback?: () => void): void {
 }
 
 export default {
-
   success,
   info(message: any) {
-    Message.info({
-      closable: true,
-      content: typeof message === 'string' ? message : stringifyJsonWithBigIntSupport(message)
+    MessagePlugin.info({
+      closeBtn: true,
+      content: typeof message === "string" ? message : stringifyJsonWithBigIntSupport(message)
     });
   },
   warning,
   error
-}
+};

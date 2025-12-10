@@ -8,7 +8,7 @@ import ConditionExportEvent, {
 } from "@/components/DataExport/domain";
 import {
   Alert,
-  Drawer,
+  DrawerPlugin,
   Form,
   FormItem,
   Input,
@@ -18,7 +18,7 @@ import {
   Radio,
   RadioGroup,
   Select
-} from "@arco-design/web-vue";
+} from "tdesign-vue-next";
 import {exportData} from "@/components/DataExport/func";
 import useLoadingStore from "@/store/LoadingStore";
 import MessageUtil from "@/utils/model/MessageUtil";
@@ -35,48 +35,49 @@ export function showDataExportDrawer(config: ConditionExportEvent) {
   const instance: Ref<ExportConfig> = ref<ExportConfig>(getDefaultConfig(config));
 
   // 显示对话框
-  Drawer.open({
-    title: "数据导出",
-    content: () => <Form model={instance} layout="vertical">
+  DrawerPlugin({
+    header: "数据导出",
+    size: "600px",
+    default: () => <Form data={instance.value}>
       <Alert title={"导出卡顿？"}>
         <span>👉 想一键导出 10 万+ 行到 CSV/Excel/JSON？试试 </span>
         <AppLink event="导出"/>
         <span>！</span>
       </Alert>
-      <FormItem label="文件名">
+      <FormItem label="文件名" labelAlign={"top"}>
         <Input v-model={instance.value.name}/>
       </FormItem>
-      <FormItem label="文件类型">
+      <FormItem label="文件类型" labelAlign={"top"}>
         <Select v-model={instance.value.type}>
-          <Option value={ExportType.JSON}>JSON文件(*.json)</Option>
-          <Option value={ExportType.XLSX}>表格(*.xlsx)</Option>
-          <Option value={ExportType.CSV}>CSV(*.csv)</Option>
-          <Option value={ExportType.TSV}>管道分隔(*.txt)</Option>
-          <Option value={ExportType.TXT}>文本文件(*.txt)</Option>
+          <Option value={ExportType.JSON} label={"JSON文件(*.json)"}>JSON文件(*.json)</Option>
+          <Option value={ExportType.XLSX} label={"表格(*.xlsx)"}>表格(*.xlsx)</Option>
+          <Option value={ExportType.CSV} label={"CSV(*.csv)"}>CSV(*.csv)</Option>
+          <Option value={ExportType.TSV} label={"管道分隔(*.txt)"}>管道分隔(*.txt)</Option>
+          <Option value={ExportType.TXT} label={"文本文件(*.txt)"}>文本文件(*.txt)</Option>
         </Select>
       </FormItem>
       {isText(instance)}
-      <FormItem label="导出范围">
+      <FormItem label="导出范围" labelAlign={"top"}>
         <Select v-model={instance.value.scope}>
-          <Option value={ExportScope.CURRENT}>当前页面</Option>
-          <Option value={ExportScope.ALL}>全部</Option>
-          <Option value={ExportScope.CUSTOM}>自定义范围</Option>
+          <Option value={ExportScope.CURRENT} label={"当前页面"}>当前页面</Option>
+          <Option value={ExportScope.ALL} label={"全部"}>全部</Option>
+          <Option value={ExportScope.CUSTOM} label={"自定义范围"}>自定义范围</Option>
         </Select>
       </FormItem>
       {isCustom(instance)}
       {isCurrent(instance)}
-      <FormItem label="来源">
+      <FormItem label="来源" labelAlign={"top"}>
         <Select v-model={instance.value.source}>
-          <Option value={ExportSource.ALL}
+          <Option value={ExportSource.ALL} label={"全部"}
                   disabled={!allowExportTypes.includes(instance.value.type)}>全部
           </Option>
-          <Option value={ExportSource.HIT}>只导出hits</Option>
-          <Option value={ExportSource.SOURCE}>只导出_source内容</Option>
+          <Option value={ExportSource.HIT} label={"只导出hits"}>只导出hits</Option>
+          <Option value={ExportSource.SOURCE} label={"只导出_source内容"}>只导出_source内容</Option>
         </Select>
       </FormItem>
-      <FormItem label="API类型">
+      <FormItem label="API类型" labelAlign={"top"}>
         {{
-          default: () => <RadioGroup v-model={instance.value.apiType} type="button"
+          default: () => <RadioGroup v-model={instance.value.apiType} theme="button"
                                      disabled={instance.value.scope != ExportScope.ALL}>
             <Radio value={ApiType.BASE}>基础API</Radio>
             <Radio value={ApiType.SCROLL}>scroll api</Radio>
@@ -94,8 +95,7 @@ export function showDataExportDrawer(config: ConditionExportEvent) {
       </FormItem>
       {isScroll(instance)}
     </Form>,
-    width: "400px",
-    onOk() {
+    onConfirm() {
       // 打开
       useLoadingStore().start('开始导出');
       exportData(instance.value)
@@ -127,7 +127,7 @@ function getDefaultConfig(config: ConditionExportEvent): ExportConfig {
 
 function isText(instance: Ref<ExportConfig>) {
   if (instance.value.type === ExportType.TXT) {
-    return <FormItem label="分隔符">
+    return <FormItem label="分隔符" labelAlign={"top"}>
       <Input v-model={instance.value.separator}/>
     </FormItem>;
   }
@@ -135,7 +135,7 @@ function isText(instance: Ref<ExportConfig>) {
 
 function isCustom(instance: Ref<ExportConfig>) {
   if (instance.value.scope === ExportScope.CUSTOM) {
-    return <FormItem label="范围">
+    return <FormItem label="范围" labelAlign={"top"}>
       <InputGroup>
         <InputNumber v-model={instance.value.customStart} min={1}/>
         <span> - </span>
@@ -147,7 +147,7 @@ function isCustom(instance: Ref<ExportConfig>) {
 
 function isCurrent(instance: Ref<ExportConfig>) {
   if (instance.value.scope !== ExportScope.CURRENT) {
-    return <FormItem label="每页大小">
+    return <FormItem label="每页大小" labelAlign={"top"}>
       <InputNumber v-model={instance.value.size} min={1}/>
     </FormItem>
   }
@@ -155,7 +155,7 @@ function isCurrent(instance: Ref<ExportConfig>) {
 
 function isScroll(instance: Ref<ExportConfig>) {
   if (instance.value.apiType === ApiType.SCROLL) {
-    return <FormItem label="滚动时间">
+    return <FormItem label="滚动时间" labelAlign={"top"}>
       {{
         default: () => <Input v-model={instance.value.scrollTime}/>,
         help: () => {

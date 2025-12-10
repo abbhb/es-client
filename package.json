@@ -30,6 +30,7 @@
     "@vueuse/core": "^9.13.0",
     "@vueuse/integrations": "^10.11.1",
     "axios": "^1.13.2",
+    "dayjs": "^1.11.19",
     "dexie": "^3.2.7",
     "es-toolkit": "^1.42.0",
     "fuse.js": "^6.6.2",

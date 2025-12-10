@@ -1,16 +1,16 @@
 import {
   Button,
+  DialogInstance,
+  DialogPlugin,
   Form,
   FormItem,
   Input,
   InputNumber,
-  Modal,
-  ModalReturn,
   Option,
   Select,
-  TabPane,
+  TabPanel,
   Tabs
-} from "@arco-design/web-vue";
+} from "tdesign-vue-next";
 import {IndexCreate} from "@/domain/es/IndexCreate";
 import {getDefaultIndexInstance, IndexInstance} from "@/domain/IndexInstance";
 import {useSeniorSearchStore} from "@/store/components/SeniorSearchStore";
@@ -19,7 +19,7 @@ import indexApi from "@/components/es/IndexApi";
 import {useIndexStore} from "@/store";
 import useLoadingStore from "@/store/LoadingStore";
 import MonacoEditor from "@/components/monaco-editor/index.vue";
-import {parseJsonWithBigIntSupport, stringifyJsonWithBigIntSupport} from "$/util";
+import {formatJsonString, parseJsonWithBigIntSupport, stringifyJsonWithBigIntSupport} from "$/util";
 import {copyText} from "@/utils/BrowserUtil";
 import AlertExtend from "@/components/AppExtend/AlertExtend.vue";
 
@@ -78,25 +78,25 @@ export function indexAdd(): void {
       index.value = {
         name: index.value.name,
         settings: index.value.settings,
-        mappings: stringifyJsonWithBigIntSupport(sourceIndex.indexInfo.mappings)
+        mappings: formatJsonString(stringifyJsonWithBigIntSupport(sourceIndex.indexInfo.mappings))
       };
     }
   }
 
-  let modalReturn: ModalReturn = Modal.open({
-    title: "新建索引",
+  let modalReturn = DialogPlugin({
+    header: "新建索引",
     width: "850px",
     draggable: true,
-    modalClass: "home-index-add",
-    renderToBody: true,
-    content: () => <>
-      <Form model={index} layout="vertical">
-        <AlertExtend title={"手动建索引太麻烦？"} content={"提供可视化创建索引向导，轻松搞定复杂配置！"} event={"新建索引"} />
-        <FormItem label="名称">
+    dialogClassName: "home-index-add",
+    placement: "center",
+    default: () => <>
+      <Form data={index.value}>
+        <AlertExtend title={"手动建索引太麻烦？"} content={"提供可视化创建索引向导，轻松搞定复杂配置！"}
+                     event={"新建索引"}/>
+        <FormItem label="名称" labelAlign={"top"}>
           {{
-            default: () => <Input v-model={index.value.name} style="width: 300px;" maxLength={255}
-                                  showWordLimit allowClear
-                                  error={nameError.value > 0}></Input>,
+            default: () => <Input v-model={index.value.name} style="width: 300px;" maxlength={255}
+                                  clearable/>,
             help: () => {
               if (nameError.value === 1) {
                 return <span>不能是大写。</span>
@@ -109,11 +109,11 @@ export function indexAdd(): void {
           }}
         </FormItem>
       </Form>
-      <Tabs v-model:activeKey={activeKey.value}>
+      <Tabs v-model={activeKey.value}>
         {{
           default: () => <>
-            <TabPane title="设置" key="1">
-              <Form model={index.value.settings} layout="vertical">
+            <TabPanel label="设置" value="1">
+              <Form data={index.value.settings} layout="vertical" class={"mt-8px"}>
                 <FormItem label="分片数">
                   <InputNumber v-model={index.value.settings.number_of_shards}/>
                 </FormItem>
@@ -121,32 +121,33 @@ export function indexAdd(): void {
                   <InputNumber v-model={index.value.settings.number_of_replicas}/>
                 </FormItem>
               </Form>
-            </TabPane>
-            <TabPane title="映射设置" key="2">
+            </TabPanel>
+            <TabPanel label="映射设置" value="2">
               <MonacoEditor v-model={index.value.mappings} language="json"
-                            height={'calc(90vh - 336px)'}/>
-            </TabPane>
+                            height={'calc(80vh - 336px)'} class={"mt-8px"}/>
+            </TabPanel>
           </>,
-          extra: () => activeKey.value == "2" && <>
-            <Select allowClear allowSearch v-model={fromIndex.value}>
+          action: () => activeKey.value == "2" && <>
+            <Select clearable filterable v-model={fromIndex.value}>
               {indices.value.map(idx =>
                 <Option value={idx.name}>{idx.name}</Option>)}
             </Select>
-            <Button type="text" disabled={disabled.value} onClick={copy}>拷贝mapper</Button>
+            <Button variant="text" theme={"primary"} disabled={disabled.value} onClick={copy}>拷贝mapper</Button>
           </>
         }}
       </Tabs>
     </>,
     footer: () => <>
-      <Button type="text" onClick={() => jumpToSeniorSearch(index, modalReturn)}>跳转到高级查询</Button>
-      <Button type="text" onClick={() => copyIndex(index, modalReturn)}>复制到剪切板</Button>
-      <Button type="secondary" onClick={() => modalReturn.close()}>取消</Button>
-      <Button type="primary" onClick={() => addIndex(index, modalReturn)}>新增</Button>
+      <Button variant="text" theme={"primary"}
+              onClick={() => jumpToSeniorSearch(index, modalReturn)}>跳转到高级查询</Button>
+      <Button variant="text" theme={"primary"} onClick={() => copyIndex(index, modalReturn)}>复制到剪切板</Button>
+      <Button theme="default" onClick={() => modalReturn.destroy()}>取消</Button>
+      <Button theme="primary" onClick={() => addIndex(index, modalReturn)}>新增</Button>
     </>,
   });
 }
 
-function jumpToSeniorSearch(index: Ref<IndexInstance>, modalReturn: ModalReturn) {
+function jumpToSeniorSearch(index: Ref<IndexInstance>, modalReturn: DialogInstance) {
   // 构建数据
   // 高级查询数据填充
   useSeniorSearchStore().loadEvent({
@@ -154,24 +155,24 @@ function jumpToSeniorSearch(index: Ref<IndexInstance>, modalReturn: ModalReturn)
     method: 'PUT',
     body: stringifyJsonWithBigIntSupport(getIndexCreate(index))
   });
-  modalReturn.close();
+  modalReturn.destroy();
 }
 
-function copyIndex(index: Ref<IndexInstance>, modalReturn: ModalReturn) {
+function copyIndex(index: Ref<IndexInstance>, modalReturn: DialogInstance) {
   // 执行拷贝
   copyText(stringifyJsonWithBigIntSupport(getIndexCreate(index)));
   MessageUtil.success("已成功复制到剪切板");
-  modalReturn.close();
+  modalReturn.destroy();
 }
 
-function addIndex(index: Ref<IndexInstance>, modalReturn: ModalReturn) {
+function addIndex(index: Ref<IndexInstance>, modalReturn: DialogInstance) {
   useLoadingStore().start("正在新增索引")
   // 新增
   indexApi(index.value.name).create(getIndexCreate(index))
     .then(res => MessageUtil.success(res, useIndexStore().reset))
     .catch(e => MessageUtil.error('索引创建错误', e))
     .finally(useLoadingStore().close);
-  modalReturn.close()
+  modalReturn.destroy()
 }
 
 

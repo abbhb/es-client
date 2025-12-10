@@ -1,5 +1,5 @@
 <template>
-  <a-layout-header id="header">
+  <t-header id="header">
     <div class="left">
       <div class="logo" :title="name || 'ES-client'">
         {{ name || 'ES-client' }}
@@ -95,13 +95,7 @@
         </t-dropdown-menu>
       </t-dropdown>
     </div>
-    <!-- 问题反馈 -->
-    <t-dialog v-model:visible="feedbackDialog" header="问题反馈" placement="center" :close-on-overlay-click="false"
-              render-to-body
-              draggable unmount-on-close :footer="false">
-      <feedback-module v-if="feedbackDialog"/>
-    </t-dialog>
-  </a-layout-header>
+  </t-header>
 </template>
 <script lang="ts" setup>
 import {useRouter} from 'vue-router';
@@ -110,7 +104,6 @@ import {Constant} from '@/global/Constant';
 import PageNameEnum from "@/enumeration/PageNameEnum";
 import LocalNameEnum from '@/enumeration/LocalNameEnum';
 // 组件
-import FeedbackModule from "@/module/Feedback/index.vue";
 import AppInfo from './app-info.vue';
 // 引入状态管理
 import {useIndexStore, useUrlStore} from "@/store";
@@ -136,7 +129,6 @@ const router = useRouter();
 const size = useWindowSize();
 
 const urlId = ref<number | string | undefined>(useUrlStore().id);
-const feedbackDialog = ref<boolean>(false);
 
 const urls = computed(() => useUrlStore().urls);
 const loading = computed(() => useLoadingStore().loading);
@@ -202,7 +194,7 @@ function versionCommand(command: string) {
       alert('检查更新')
       break;
     case 'feedback':
-      feedbackDialog.value = true;
+      openUrl(Constant.url.feedback);
       break;
   }
 }

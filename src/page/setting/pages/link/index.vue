@@ -9,19 +9,19 @@
         <t-dropdown trigger="click">
           <t-button theme="primary" shape="square">
             <template #icon>
-              <more-icon />
+              <more-icon/>
             </template>
           </t-button>
           <t-dropdown-menu>
             <t-dropdown-item @click="exportUrlToJson()">
               <template #prefix-icon>
-                <file-export-icon />
+                <file-export-icon/>
               </template>
               数据导出
             </t-dropdown-item>
             <t-dropdown-item @click="importUrlByJson()">
               <template #prefix-icon>
-                <file-import-icon />
+                <file-import-icon/>
               </template>
               数据导入
             </t-dropdown-item>
@@ -29,52 +29,22 @@
         </t-dropdown>
       </t-space>
     </div>
-    <a-table ref="urlTable" :data="urls" class="data" sticky-header style="height: 100%;" :draggable="draggable"
-             :pagination="false"
-             @change="urlChange($event)" :virtual-list-props="virtualListProps" :scroll="{y: '100%'}">
-      <template #columns>
-        <a-table-column data-index="name" title="名称" :width="120"
-                        fixed="left"></a-table-column>
-        <a-table-column data-index="value" title="链接" :width="260">
-          <template #cell="{ record }">
-            <t-link @click="open(record.value)" theme="primary" target="_blank">{{ record.value }}</t-link>
-            <div class="url-copy" @click="execCopy(record.value)">复制</div>
-          </template>
-        </a-table-column>
-        <a-table-column data-index="version" title="版本" :width="100"/>
-        <a-table-column title="认证" :width="100">
-          <template #cell="{ record }">
-            {{ prettyAuth(record.isAuth) }}
-          </template>
-        </a-table-column>
-        <a-table-column title="操作" :width="170" fixed="right">
-          <template #cell="{ record }">
-            <t-button theme="primary" size="small" @click="openUpdateLink(record)">修改</t-button>
-            <t-popconfirm @confirm="remove(record.id, record.value)" content="是否删除链接，删除后将无法恢复"
-                          confirm-btn="删除" placement="bottom-right" >
-              <t-button theme="danger" size="small"
-                        style="margin-left: 8px;">
-                删除
-              </t-button>
-            </t-popconfirm>
-          </template>
-        </a-table-column>
-      </template>
-    </a-table>
+    <t-table ref="urlTable" :data="urls" class="data" style="height: 100%;" :columns="linkTableColumn" row-key="id"
+             :maxHeight="virtualListProps.height">
+    </t-table>
   </div>
 </template>
 <script lang="ts" setup>
 import {useUrlStore} from "@/store";
-import {useIndexStore} from "@/store";
 import {getDefaultUrl} from "@/entity/Url";
 import MessageUtil from "@/utils/model/MessageUtil";
 import {useFuse} from "@vueuse/integrations/useFuse";
-import {TableDraggable} from "@arco-design/web-vue";
-import {copyText, download, openUrl} from "@/utils/BrowserUtil";
+import {download} from "@/utils/BrowserUtil";
 import {Constant} from "@/global/Constant";
-import {openAddLink, openUpdateLink} from "@/page/setting/pages/link/components/EditLink";
+import {openAddLink} from "@/page/setting/pages/link/components/EditLink";
 import {parseJsonWithBigIntSupport, stringifyJsonWithBigIntSupport} from "$/util";
 import {FileExportIcon, FileImportIcon, MoreIcon} from "tdesign-icons-vue-next";
+import {linkTableColumn} from "@/page/setting/pages/link/components/LinkTableColumn";
 
 const size = useWindowSize();
 
@@ -92,50 +62,16 @@ const {results} = useFuse(keyword, items, {
   }
 });
 const urls = computed(() => results.value.map(e => e.item));
-const draggable = computed<TableDraggable | undefined>(() => {
-  if (keyword.value === '') {
-    return {
-      type: 'handle'
-    }
-  }
-});
 
 const virtualListProps = computed(() => ({
   height: size.height.value - 144
 }))
 
-
 // -------------------------------------- 方法 --------------------------------------
 
-function urlChange(items: Array<any>) {
-  useUrlStore().save(items.map(item => toRaw(item)));
+function onDragSort({newData}: { newData: Array<any> }) {
+  useUrlStore().save(newData.map(item => toRaw(item)));
 }
-
-
-function prettyAuth(params: boolean) {
-  return params ? "需要认证" : "无需认证";
-}
-
-function remove(id: number, value: string) {
-  useUrlStore().remove(id)
-    .then(() => removeAfter(value))
-    .catch(e => MessageUtil.error('删除失败', e));
-}
-
-function removeAfter(value: string) {
-  MessageUtil.success('删除成功');
-  if (useUrlStore().current === value) {
-    // 删除了当前索引
-    useUrlStore().clear();
-    useIndexStore().clear();
-  }
-}
-
-const execCopy = (text: string) => {
-  copyText(text);
-  MessageUtil.success("已成功复制到剪切板");
-};
-const open = (url: string) => openUrl(url);
 
 // 导入导出
 
@@ -191,7 +127,6 @@ async function handlerJson(json?: string) {
   }
   await useUrlStore().addByBatch(records.map(e => getDefaultUrl(e)))
 }
-
 </script>
 <style lang="less">
 .setting-url {
@@ -203,6 +138,9 @@ async function handlerJson(json?: string) {
 
   .url-copy {
     display: inline;
+    margin-left: 10px;
+    color: #0052d9;
+    cursor: pointer;
   }
 }
 </style>

@@ -19,6 +19,9 @@ export const Constant = {
   }, {
     name: 'Github',
     url: 'https://github.com/q2316367743/es-client'
+  }, {
+    name: "GitCode",
+    url: "https://gitcode.com/q2316367743/es-client"
   }] as Repository[],
   // 分发平台
   distributes: {

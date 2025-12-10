@@ -14,10 +14,9 @@
 <script lang="ts" setup>
 import {RestClientEditor} from "@/components/RestClientEditor";
 import SsOption from "@/page/senior-search/layout/senior-search-editor/components/ss-option/index.vue";
-import {enableFilter} from "@/store/record/SeniorFilterRecordStore";
 
 const size = useWindowSize();
-const height = computed(() => (size.height.value - (enableFilter.value ? 103 : 56)) + 'px');
+const height = computed(() => (size.height.value - 56) + 'px');
 
 
 </script>
