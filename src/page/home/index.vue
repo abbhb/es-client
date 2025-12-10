@@ -8,7 +8,7 @@
         <t-popup trigger="click" show-arrow>
           <t-button theme="default" shape="square" variant="outline">
             <template #icon>
-              <icon-more/>
+              <ellipsis-icon />
             </template>
           </t-button>
           <template #content>
@@ -54,6 +54,7 @@ import IndexItem from "./components/index-item.vue";
 import {useFuse} from "@vueuse/integrations/useFuse";
 import {Status, useHomeStore} from "@/store/components/HomeStore";
 import {indexAdd} from "@/page/home/components/IndexAdd";
+import {EllipsisIcon} from "tdesign-icons-vue-next";
 
 
 const size = useWindowSize();

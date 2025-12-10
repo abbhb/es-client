@@ -16,7 +16,7 @@ export interface UseDataBrowserQueryContent {
   execute(sql: string): void;
 }
 
-export const useDataBrowserQueryContent = (id: number): UseDataBrowserQueryContent => {
+export const useDataBrowserQueryContent = (id: string): UseDataBrowserQueryContent => {
 
   const size = ref(0);
 

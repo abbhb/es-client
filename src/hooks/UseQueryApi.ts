@@ -10,7 +10,7 @@ export interface UseQueryApiResult {
 
 export function useQueryApi(queryFn: (...args: any[]) => Promise<string>): UseQueryApiResult {
   const data = ref("");
-  const loading = ref(true);
+  const loading = ref(false);
   const error = ref<Error | null>(null);
 
   const reload = async (...args: any[]) => {
@@ -29,7 +29,7 @@ export function useQueryApi(queryFn: (...args: any[]) => Promise<string>): UseQu
     }
   };
 
-  reload().then(() => console.debug("初始化查询"));
+  // reload().then(() => console.debug("初始化查询"));
 
   return { data, loading, error, reload };
 }

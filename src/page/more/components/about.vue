@@ -231,7 +231,7 @@ export default defineComponent({
   }
 
   .professional-card {
-    border: 1px solid var(--color-border-2);
+    border: 1px solid var(--td-border-level-2-color);
     background: linear-gradient(120deg, var(--color-bg-2) 0%, var(--color-bg-1) 100%);
 
     .card-title {
@@ -271,7 +271,7 @@ export default defineComponent({
 
       .separator {
         margin: 0 8px;
-        color: var(--color-border-2);
+        color: var(--td-border-level-2-color);
       }
     }
   }

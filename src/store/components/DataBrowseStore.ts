@@ -6,6 +6,7 @@ import {
   UseDataBrowserQueryContent,
   useDataBrowserQueryContent
 } from "@/hooks";
+import {useUrlStore} from "@/store";
 
 export type DataBrowserType = "folder" | "index" | "alias" | "view" | "query";
 
@@ -32,6 +33,12 @@ export const useDataBrowseStore = defineStore("data-browser", () => {
   const tabId = ref('');
   const tabMap = shallowRef(new Map<string, DataBrowserTab>());
 
+  watch(() => useUrlStore().id, () => {
+    // 每次变化时清空
+    tabs.value = [];
+    tabMap.value.clear();
+  })
+
 
   const openTab = (value: string, label: string) => {
     const {type, id: val} = decodeValue(value);
@@ -49,7 +56,7 @@ export const useDataBrowseStore = defineStore("data-browser", () => {
     };
     tabId.value = value;
     if (type === 'query') {
-      const instance = useDataBrowserQueryContent(Number(val));
+      const instance = useDataBrowserQueryContent(val);
       tabMap.value.set(value, instance);
     } else {
       const instance = useDataBrowserInstance(val);

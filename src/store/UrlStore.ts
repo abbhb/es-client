@@ -1,12 +1,14 @@
 import {defineStore} from "pinia";
 import {Url} from "@/entity/Url";
 import {map} from "@/utils/ArrayUtil";
-import {listByAsync, removeOneByAsync, saveListByAsync, setItem} from "@/utils/utools/DbStorageUtil";
+import {listByAsync, saveListByAsync, setItem} from "@/utils/utools/DbStorageUtil";
 import LocalNameEnum from "@/enumeration/LocalNameEnum";
 import {statistics} from "@/global/BeanFactory";
 import {buildEsRequestConfig, RequestConfig, useRequest, useRequestJson} from "@/plugins/native/axios";
 import {Overview} from "@/domain/es/Overview";
 import {createElasticsearchClient, ElasticsearchClient} from "$/elasticsearch-client";
+import {clearDataBrowserQuery} from "@/service/DataBrowser/DataBrwoserQueryService";
+import {clearDataBrowserViews} from "@/service/DataBrowser/DataBrowserViewService";
 
 const title = useTitle();
 
@@ -137,8 +139,11 @@ export const useUrlStore = defineStore('url', () => {
     await _sync();
     // TODO: 删除关联数据
     // 1. 删除数据浏览视图
-    await removeOneByAsync(`/item/data-browser/view/${id}`);
+    await clearDataBrowserViews(id);
     // 2. 删除数据浏览查询
+    await clearDataBrowserQuery(id);
+    // 删除高级查询列表
+
   };
 
   const save = async (res: Array<Url>) => {

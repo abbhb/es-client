@@ -8,6 +8,8 @@ enum PageNameEnum {
 
     SENIOR_SEARCH = "/senior-search",
 
+    DEV_TOOL = "/dev-tool",
+
     TOOL = "/tool",
 
     TOOL_WATCH = "/tool/watch",

@@ -20,11 +20,11 @@
         </template>
         基础搜索
       </t-menu-item>
-      <t-menu-item :value="PageNameEnum.SENIOR_SEARCH">
+      <t-menu-item :value="PageNameEnum.DEV_TOOL">
         <template #icon>
-          <filter-icon/>
+          <code-icon />
         </template>
-        高级搜索
+        开发者工具
       </t-menu-item>
       <t-submenu :value="PageNameEnum.DASHBOARD">
         <template #icon>
@@ -74,6 +74,12 @@
           关于
         </t-menu-item>
       </t-submenu>
+      <t-menu-item :value="PageNameEnum.SENIOR_SEARCH">
+        <template #icon>
+          <filter-icon/>
+        </template>
+        高级搜索
+      </t-menu-item>
       <template #operations>
         <t-button variant="text" shape="square" @click="changeCollapsed()">
           <template #icon>
@@ -88,6 +94,7 @@
 import PageNameEnum from "@/enumeration/PageNameEnum";
 import LocalNameEnum from "@/enumeration/LocalNameEnum";
 import {
+  CodeIcon,
   DashboardIcon,
   EllipsisIcon,
   FilterIcon,

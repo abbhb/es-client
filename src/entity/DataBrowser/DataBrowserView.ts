@@ -1,4 +1,3 @@
-import Base from "@/entity/Base";
 import LocalNameEnum from "@/enumeration/LocalNameEnum";
 
 export const DATA_BROWSER_VIEW_KEY = (urlId: number) => `${LocalNameEnum.ITEM_DATA_BROWSER_VIEW}/${urlId}`;
@@ -8,7 +7,10 @@ export const DATA_BROWSER_VIEW_KEY = (urlId: number) => `${LocalNameEnum.ITEM_DA
  *
  * @id /item/data-browser/view/${urlId}
  */
-export interface DataBrowserView extends Base {
+export interface DataBrowserView {
+  id: string;
+  createTime: number;
+  updateTime: number;
   /**
    * 匹配模式
    */

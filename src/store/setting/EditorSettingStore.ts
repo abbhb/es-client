@@ -4,7 +4,7 @@ import Optional from "@/utils/Optional";
 import {getFromOneByAsync, saveOneByAsync} from "@/utils/utools/DbStorageUtil";
 import LocalNameEnum from "@/enumeration/LocalNameEnum";
 
-const useEditorSettingStore = defineStore('editor-setting', {
+export const useEditorSettingStore = defineStore('editor-setting', {
   state: () => ({
     instance: getDefaultEditorSettingValue(),
   }),

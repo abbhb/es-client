@@ -9,6 +9,7 @@ import {
   listDataBrowserQuery,
   renameDataBrowserQuery,
 } from "@/service/DataBrowser/DataBrwoserQueryService";
+import {useSnowflake} from "$/util";
 
 export const useDataBrowserQueryStore = defineStore("dataBrowserQuery", () => {
   const urlId = ref<number>();
@@ -46,7 +47,7 @@ export const useDataBrowserQueryStore = defineStore("dataBrowserQuery", () => {
         dialog.setConfirmLoading(true);
         addDataBrowserQuery(urlId.value!, {
           name: name.value,
-          id: Date.now(),
+          id: useSnowflake().nextId(),
           createTime: Date.now(),
           updateTime: Date.now(),
         })
@@ -65,7 +66,7 @@ export const useDataBrowserQueryStore = defineStore("dataBrowserQuery", () => {
     });
   };
 
-  const remove = async (id: number, label: string) => {
+  const remove = async (id: string, label: string) => {
     MessageBoxUtil.alert(`是否删除查询「${label}」`, "确认删除").then(() => {
       deleteDataBrowserQuery(urlId.value!, id)
         .then(() => {
@@ -78,7 +79,7 @@ export const useDataBrowserQueryStore = defineStore("dataBrowserQuery", () => {
     });
   };
 
-  const rename = async (id: number, name: string) => {
+  const rename = async (id: string, name: string) => {
     MessageBoxUtil.prompt(`请输入新的查询名称`, "重命名查询", {
       inputValue: name,
       confirmButtonText: "重命名",

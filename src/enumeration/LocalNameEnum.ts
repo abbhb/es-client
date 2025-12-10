@@ -20,6 +20,10 @@ enum LocalNameEnum {
 
   KEY_PRIVACY_ES_VERSION = '/key/privacy/es/version',
 
+  KEY_DEV_TOOL_SIZE = '/key/dev-tool/size',
+
+  KEY_DEV_TOOL_EXPENDED = '/key/dev-tool/expended',
+
   KEY_COLLAPSED = '/key/collapsed',
 
   DB_URL = '/db/url',
@@ -85,6 +89,18 @@ enum LocalNameEnum {
    * /item/data-browser/query/${id}
    */
   ITEM_DATA_BROWSER_QUERY = '/item/data-browser/query',
+
+  /**
+   * 开发工具 - 文件列表
+   * /list/dev-tool/file-item/${urlId}
+   */
+  LIST_DEV_TOOL_FILE_ITEM = '/list/dev-tool/file-item',
+
+  /**
+   * 开发工具 - 文件项
+   * /item/dev-tool/file-item/${id}
+   */
+  ITEM_DEV_TOOL_FILE_ITEM = '/item/dev-tool/file-item',
 
   /**
    * 页面 - 数据浏览 - 大小

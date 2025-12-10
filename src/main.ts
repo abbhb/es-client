@@ -9,8 +9,6 @@ import 'vxe-table/es/style.css'
 import 'virtual:uno.css'
 import {registerLanguageForSql} from "@/components/SqlEditor";
 import {registerLanguageForHttp} from "@/components/RestClientEditor";
-import ArcoVueIcon from '@arco-design/web-vue/es/icon';
-import '@arco-design/web-vue/dist/arco.css';
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
@@ -32,7 +30,6 @@ registerLanguageForSql();
 // 插件
 createApp(AppInstance)
   .use(createPinia())
-  .use(ArcoVueIcon)
   .use(router)
   .use(VxeUIBase).use(VxeUITable)
   .mount('#app');

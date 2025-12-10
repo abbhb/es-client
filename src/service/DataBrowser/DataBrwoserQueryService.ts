@@ -17,7 +17,7 @@ export async function listDataBrowserQuery(urlId: number) {
   return list;
 }
 
-export async function getDataBrowserQuery(id: number) {
+export async function getDataBrowserQuery(id: string) {
   return await getFromOneByAsync<DataBrowserQueryBody>(DATA_BROWSER_QUERY_ITEM_KEY(id), {
     content: '',
     records: [],
@@ -37,7 +37,7 @@ export async function addDataBrowserQuery(urlId: number, view: DataBrowserQueryI
   });
 }
 
-export async function renameDataBrowserQuery(urlId: number, viewId: number, newName: string) {
+export async function renameDataBrowserQuery(urlId: number, viewId: string, newName: string) {
   // 先查询到记录
   const {list} = await listByAsync<DataBrowserQueryItem>(DATA_BROWSER_QUERY_KEY(urlId));
   const index = list.findIndex(e => e.id === viewId);
@@ -49,11 +49,11 @@ export async function renameDataBrowserQuery(urlId: number, viewId: number, newN
   await saveListByAsync<DataBrowserQueryItem>(DATA_BROWSER_QUERY_KEY(urlId), list);
 }
 
-export async function saveDataBrowserQueryContent(viewId: number, body: DataBrowserQueryBody) {
+export async function saveDataBrowserQueryContent(viewId: string, body: DataBrowserQueryBody) {
   await saveOneByAsync<DataBrowserQueryBody>(DATA_BROWSER_QUERY_ITEM_KEY(viewId), body);
 }
 
-export async function deleteDataBrowserQuery(urlId: number, viewId: number) {
+export async function deleteDataBrowserQuery(urlId: number, viewId: string) {
   const {list} = await listByAsync<DataBrowserQueryItem>(DATA_BROWSER_QUERY_KEY(urlId));
   const index = list.findIndex(e => e.id === viewId);
   if (index === -1) {
@@ -64,4 +64,12 @@ export async function deleteDataBrowserQuery(urlId: number, viewId: number) {
   await saveListByAsync<DataBrowserQueryItem>(DATA_BROWSER_QUERY_KEY(urlId), list);
   // 删除本地存储项
   await removeOneByAsync(DATA_BROWSER_QUERY_ITEM_KEY(viewId));
+}
+
+export async function clearDataBrowserQuery(urlId: number) {
+  const query = await listDataBrowserQuery(urlId);
+  for (let item of query) {
+    await removeOneByAsync(DATA_BROWSER_QUERY_ITEM_KEY(item.id));
+  }
+  await removeOneByAsync(DATA_BROWSER_QUERY_KEY(urlId));
 }

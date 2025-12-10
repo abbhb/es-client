@@ -8,6 +8,7 @@ import {
 import MessageUtil from "@/utils/model/MessageUtil";
 import {DialogPlugin, FormItem, Input, Paragraph, Text} from "tdesign-vue-next";
 import MessageBoxUtil from "@/utils/model/MessageBoxUtil";
+import {useSnowflake} from "$/util";
 
 export const useDataBrowserViewStore = defineStore('dataBrowserView', () => {
 
@@ -68,7 +69,7 @@ export const useDataBrowserViewStore = defineStore('dataBrowserView', () => {
         dialog.setConfirmLoading(true);
         addDataBrowserView(urlId.value!, {
           pattern: pattern.value,
-          id: Date.now(),
+          id: useSnowflake().nextId(),
           createTime: Date.now(),
           updateTime: Date.now(),
         }).then(() => {
@@ -84,7 +85,7 @@ export const useDataBrowserViewStore = defineStore('dataBrowserView', () => {
     })
   }
 
-  const remove = async (id: number, label: string) => {
+  const remove = async (id: string, label: string) => {
     MessageBoxUtil.alert(`是否删除视图「${label}」`, "确认删除")
       .then(() => {
         deleteDataBrowserView(urlId.value!, id).then(() => {

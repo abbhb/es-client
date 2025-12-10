@@ -26,6 +26,10 @@ const router = createRouter({
     path: '/senior-search',
     component: () => import('@/page/senior-search/index.vue')
   }, {
+    name: '开发者工具',
+    path: '/dev-tool',
+    component: () => import('@/page/dev-tool/index.vue')
+  }, {
     name: '仪表盘',
     path: PageNameEnum.DASHBOARD,
     component: () => import('@/page/dashboard/index.vue'),

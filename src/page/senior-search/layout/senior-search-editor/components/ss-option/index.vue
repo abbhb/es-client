@@ -74,7 +74,7 @@ const clearHistory = () => useSeniorSearchStore().clearHistory();
     flex-direction: column;
     justify-content: space-between;
     width: 32px;
-    border-right: 1px solid var(--color-border-2);
+    border-right: 1px solid var(--td-border-level-2-color);
 
     .arco-btn {
       margin-left: 0;

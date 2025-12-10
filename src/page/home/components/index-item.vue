@@ -234,7 +234,7 @@ export default defineComponent({
 .home-index-card {
   margin: 0;
   padding: 10px;
-  border: var(--color-border-2) solid 1px;
+  border: var(--td-border-level-2-color) solid 1px;
   border-radius: 2px;
   position: relative;
   min-width: 700px;

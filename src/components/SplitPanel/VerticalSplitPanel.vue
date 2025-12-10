@@ -38,7 +38,7 @@ const dividerStyle = computed(() => ({
   transition: 'background-color 200ms ease-out',
   backgroundColor: (isHover.value || isDragging.value)
     ? '#72ABD9'
-    : 'var(--color-border-2)'
+    : 'var(--td-border-level-2-color)'
 }))
 const dividerClass = computed(() => [])
 
