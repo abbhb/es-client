@@ -11,9 +11,6 @@
       <db-simple-item tip="新增" :disable="!index" @click="recordAdd">
         <add-icon />
       </db-simple-item>
-      <db-simple-item tip="批量操作" :disable="!index" @click="openBulkOperation">
-        <fact-check-icon />
-      </db-simple-item>
     </div>
     <!-- 右侧条件 -->
     <div class="right">
@@ -62,7 +59,6 @@ import PageHelp from "@/page/data-browse/component/DbHeader/components/PageHelp.
 import DbTableHeader from "@/page/data-browse/component/DbHeader/components/DbTableHeader.vue";
 import {
   AddIcon,
-  FactCheckIcon,
   MoreIcon,
   PrintIcon,
   QuestionnaireIcon,
@@ -83,10 +79,8 @@ const props = defineProps({
   }
 });
 
-const { index, total, run, add, buildSearchQuery, buildSearch } =
+const { index, total, run, add, buildSearch } =
   props.tab as UseDataBrowserInstance;
-
-const router = useRouter();
 
 const executeQuery = () => run();
 const showQuery = () => {
@@ -123,19 +117,6 @@ function openExportDialog() {
 }
 
 const openHelp = () => window.open(Constant.doc.dataBrowse);
-const openBulkOperation = () => {
-  if (!index) {
-    MessageUtil.error("请选择索引");
-    return;
-  }
-  router.push({
-    path: "/system/bulk-operation",
-    query: {
-      index: index,
-      data: stringifyJsonWithBigIntSupport(buildSearchQuery())
-    }
-  });
-};
 </script>
 <style scoped>
 .db-header {

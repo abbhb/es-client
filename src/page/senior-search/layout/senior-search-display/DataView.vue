@@ -4,14 +4,14 @@
     <div class="tabs">
       <div class="tab" :class="itemActive === -1 ? 'active' : ''" @click="itemActive = -1">
         <a-tooltip content="固定">
-          <icon-subscribe-add @click.stop="fixAdd()"/>
+          <bookmark-add-icon @click.stop="fixAdd()"/>
         </a-tooltip>
         <span class="ssd-v-title">结果</span>
       </div>
       <div class="tab fix" v-for="(item, index) in items" :class="itemActive === index ? 'active' : ''"
            @click="itemActive = index">
         <a-tooltip content="取消后将会关闭">
-          <icon-subscribe @click.stop="fixDelete(index)"/>
+          <bookmark-minus-icon @click.stop="fixDelete(index)"/>
         </a-tooltip>
         <span class="ssd-v-title">结果{{ item.title }}</span>
       </div>
@@ -42,6 +42,7 @@ import MonacoEditor from "@/components/monaco-editor/index.vue";
 import MonacoView from "@/components/view/MonacoView/index.vue";
 import {formatJsonString} from "$/util";
 import {copyText} from "@/utils/BrowserUtil";
+import {BookmarkAddIcon, BookmarkMinusIcon} from "tdesign-icons-vue-next";
 
 /**
  * 每一项
@@ -73,7 +74,7 @@ interface Item {
 
 export default defineComponent({
   name: 'senior-search-data-view',
-  components: {MonacoView, MonacoEditor, TableViewer},
+  components: {BookmarkMinusIcon, BookmarkAddIcon, MonacoView, MonacoEditor, TableViewer},
   props: {
     view: {
       type: Number,
@@ -141,7 +142,7 @@ export default defineComponent({
     right: 6px;
     height: 26px;
     display: flex;
-    border-bottom: var(--color-neutral-3);
+    border-bottom: var(--td-border-level-2-color);
 
     .tab {
       margin: 0 5px;
@@ -149,27 +150,15 @@ export default defineComponent({
       padding: 6px 8px;
 
       &.active {
-        background-color: var(--color-neutral-4);
+        background-color: var(--td-bg-color-container-active);
 
         &:hover {
-          background-color: var(--color-neutral-4);
+          background-color: var(--td-bg-color-container-hover);
         }
       }
 
       &:hover {
-        background-color: var(--color-neutral-2);
-      }
-
-      &.fix {
-        .arco-icon {
-          color: rgb(var(--arcoblue-6));
-        }
-      }
-
-      .arco-icon {
-        &:hover {
-          color: rgb(var(--arcoblue-5));
-        }
+        background-color: var(--td-bg-color-container-hover);
       }
 
       .ssd-v-title {
@@ -194,13 +183,7 @@ export default defineComponent({
 
       pre.hljs {
         white-space: pre-wrap;
-        /* css-3 */
-        white-space: -moz-pre-wrap;
-        /* Mozilla, since 1999 */
-        white-space: -o-pre-wrap;
-        /* Opera 7 */
         word-wrap: break-word;
-        /* Internet Explorer 5.5+ */
         word-break: break-all;
       }
     }

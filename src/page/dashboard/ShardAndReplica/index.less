@@ -38,11 +38,11 @@
 
       .size {
         margin-bottom: 14px;
-        color: var(--color-text-2);
+        color: var(--td-text-color-secondary);
       }
 
       .doc_count {
-        color: var(--color-text-2);
+        color: var(--td-text-color-secondary);
       }
     }
 
@@ -59,9 +59,9 @@
         height: 83px;
 
         .item {
-          border: 3px solid var(--color-neutral-6);
+          border: 3px solid var(--td-border-level-1-color);
           padding: 8px 12px;
-          background-color: rgb(var(--green-3));
+          background-color: rgb(var(--td-success-color));
           font-size: 1.2em;
           font-weight: bold;
           cursor: pointer;
@@ -77,18 +77,18 @@
           }
 
           &.primary {
-            border: 3px solid rgb(var(--arcoblue-6));
+            border: 3px solid var(--td-brand-color);
           }
 
           &.unassigned {
-            background-color: rgb(var(--color-neutral-3));
+            background-color: var(--td-bg-color-component);
           }
 
           &.empty {
-            background-color: var(--color-bg-1);
-            border: 3px solid var(--color-bg-1);
+            background-color: var(--td-bg-color-container);
+            border: 3px solid var(--td-border-level-1-color);
             cursor: default;
-            color: var(--color-bg-1) !important;
+            color: var(--td-text-color-primary) !important;
           }
         }
 

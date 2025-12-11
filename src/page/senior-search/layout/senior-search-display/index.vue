@@ -13,13 +13,13 @@
     <div class="tabs">
       <a-button type="text" @click="fullscreen = !fullscreen">
         <template #icon>
-          <icon-fullscreen-exit v-if="fullscreen"/>
-          <icon-fullscreen v-else/>
+          <fullscreen-exit-icon v-if="fullscreen"/>
+          <fullscreen-icon v-else/>
         </template>
       </a-button>
       <a-button type="text" style="margin-left: 0" v-if="Constant.isSupportPin" @click="pin()">
         <template #icon>
-          <icon-subscribed/>
+          <bookmark-add-icon />
         </template>
       </a-button>
       <div class="tab" :class="displayActive === 'result' ? 'active' : ''" @click="displayActive = 'result'">
@@ -50,6 +50,7 @@ import {BrowserWindowType, createDataBrowserWindow} from "@/plugins/native/brows
 import NotificationUtil from "@/utils/model/NotificationUtil";
 import SsDisplayQuick from "@/page/senior-search/layout/senior-search-display/SsDisplayQuick.vue";
 import {useGlobalSettingStore} from "@/store";
+import {BookmarkAddIcon, FullscreenExitIcon, FullscreenIcon} from "tdesign-icons-vue-next";
 
 const props = defineProps({
   fullscreen: Boolean
@@ -111,11 +112,11 @@ function pin() {
       padding: 8px 6px;
 
       &.active {
-        background-color: var(--color-neutral-2);
+        background-color: var(--td-bg-color-container-active);
       }
 
       &:hover {
-        background-color: var(--color-neutral-2);
+        background-color: var(--td-bg-color-container-hover);
       }
     }
   }

@@ -7,7 +7,7 @@
         </a-select>
         <a-button type="primary" @click="search()">
           <template #icon>
-            <icon-search/>
+            <search-icon />
           </template>
         </a-button>
       </a-input-group>
@@ -15,7 +15,7 @@
                     :ok-button-props="{status: 'danger'}" @ok="clear()">
         <a-button type="primary" status="danger" :loading="clearLoading">
           <template #icon>
-            <icon-delete/>
+            <delete-icon />
           </template>
         </a-button>
       </a-popconfirm>
@@ -30,14 +30,14 @@
               <a-tooltip content="载入">
                 <a-button type="primary" @click="load(record)">
                   <template #icon>
-                    <icon-import/>
+                    <file-import-icon />
                   </template>
                 </a-button>
               </a-tooltip>
               <a-popconfirm content="是否删除此记录？">
                 <a-button type="primary" status="danger">
                   <template #icon>
-                    <icon-delete/>
+                    <delete-icon />
                   </template>
                 </a-button>
               </a-popconfirm>
@@ -58,6 +58,7 @@ import {seniorSearchRecordService} from "@/global/BeanFactory";
 import {useUrlStore} from "@/store";
 import MessageUtil from "@/utils/model/MessageUtil";
 import MonacoView from "@/components/view/MonacoView/index.vue";
+import {DeleteIcon, FileImportIcon, SearchIcon} from "tdesign-icons-vue-next";
 
 const urlId = ref<number | undefined>(useUrlStore().id);
 const records = ref(new Array<SeniorSearchRecord>());

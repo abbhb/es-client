@@ -1,4 +1,4 @@
-<template>
+<template xmlns="">
   <div class="shard-and-replica">
     <div class="header">
       <t-input-group>
@@ -19,14 +19,14 @@
           <div v-for="node in nodeKeys" class="shard-title">
             <t-typography-paragraph class="icon">
               <t-tooltip content="主节点" v-if="node === masterNode">
-                <icon-star-fill style="color: rgb(var(--arcoblue-6));"/>
+                <star-filled-icon style="color: var(--td-brand-color)"/>
               </t-tooltip>
               <t-tooltip content="未分配的节点" v-else-if="node === UNASSIGNED">
-                <icon-exclamation-circle-fill style="color: rgb(var(--red-6));"/>
+                <info-circle-icon />
               </t-tooltip>
               <!-- 标准节点 -->
               <t-tooltip content="工作节点" v-else>
-                <icon-info-circle-fill/>
+                <info-circle-icon />
               </t-tooltip>
             </t-typography-paragraph>
             <t-typography-paragraph bold>
@@ -37,7 +37,7 @@
                 <t-button variant="text" theme="primary">
                   {{ nodes[node] ? nodes[node].name : node }}
                   <template #suffix>
-                    <icon-down/>
+                    <chevron-down-icon />
                   </template>
                 </t-button>
                 <t-dropdown-menu>
@@ -78,7 +78,7 @@ import {useIndexManageEvent} from "@/global/BeanFactory";
 import {ClusterNode} from "@/domain/index/ClusterInfo";
 import {stringifyJsonWithBigIntSupport} from "$/util";
 import MessageUtil from "@/utils/model/MessageUtil";
-import {SearchIcon} from "tdesign-icons-vue-next";
+import {ChevronDownIcon, InfoCircleIcon, SearchIcon, StarFilledIcon} from "tdesign-icons-vue-next";
 
 const UNASSIGNED = "Unassigned";
 

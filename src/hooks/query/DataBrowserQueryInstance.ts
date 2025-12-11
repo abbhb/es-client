@@ -127,6 +127,16 @@ export function useDataBrowserQueryInstance(sql: string, id: string): UseDataBro
         dsl.track_total_hits = trackTotalHitsMode === "true";
       }
     }
+    // 第四步处理排序
+    if (query.orderBy) {
+      dsl.sort = query.orderBy.map(item => {
+        return {
+          [item.field]: {
+            order: item.direction,
+          }
+        }
+      })
+    }
   } catch (e) {
     MessageUtil.error(`解析「${sql}」失败`, e)
     parse = false;

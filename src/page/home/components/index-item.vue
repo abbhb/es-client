@@ -244,54 +244,17 @@ export default defineComponent({
     display: flex;
     height: 40px;
 
-    .index-item-title {
-      font-size: 24px;
-      font-weight: bold;
-
-      padding: 1px 4px;
-      color: rgb(var(--link-6));
-      line-height: 1.5715;
-      text-decoration: none;
-      background-color: transparent;
-      border-radius: var(--border-radius-small);
-      cursor: pointer;
-      transition: all .1s cubic-bezier(0, 0, 1, 1);
-
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-
-      &:hover {
-        color: rgb(var(--link-6));
-        background-color: var(--color-fill-2);
-      }
-    }
-
-    .arco-btn {
-      margin: 6px;
-    }
-
   }
 
   .alias {
     margin-top: 7px;
     flex-wrap: wrap;
 
-    .alias-close {
-      margin-left: 4px;
-      padding: 2px;
-
-      &:hover {
-        background-color: var(--color-fill-3);
-        border-radius: 50%;
-        cursor: pointer;
-      }
-    }
   }
 
   .detail {
     margin-top: 14px;
-    color: var(--color-text-1);
+    color: var(--td-text-color-primary);
   }
 
   .option {

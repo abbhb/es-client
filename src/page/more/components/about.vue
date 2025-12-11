@@ -134,7 +134,7 @@ export default defineComponent({
       font-size: 32px;
       font-weight: bold;
       margin-bottom: 20px;
-      color: var(--color-text-1);
+      color: var(--td-text-color-primary);
     }
 
     .version-info {
@@ -149,7 +149,7 @@ export default defineComponent({
   }
 
   .feature-card {
-    background: var(--color-bg-2);
+    background: var(--td-bg-color-component);
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     padding: 24px;
@@ -166,11 +166,11 @@ export default defineComponent({
         font-size: 20px;
         font-weight: 600;
         margin: 0 0 12px 0;
-        color: var(--color-text-2);
+        color: var(--td-text-color-secondary);
       }
 
       .card-description {
-        color: var(--color-text-2);
+        color: var(--td-text-color-secondary);
         font-size: 14px;
         line-height: 1.6;
         margin-bottom: 16px;
@@ -182,8 +182,7 @@ export default defineComponent({
         margin: 20px 0;
 
         li {
-          padding: 6px 0;
-          padding-left: 20px;
+          padding: 6px 0 6px 20px;
           position: relative;
           color: #4e5969;
 
@@ -191,7 +190,7 @@ export default defineComponent({
             content: "✓";
             position: absolute;
             left: 0;
-            color: #00b42a;
+            color: var(--td-success-color);
             font-weight: bold;
           }
         }
@@ -220,7 +219,7 @@ export default defineComponent({
         margin: 10px 0;
 
         .separator {
-          color: var(--color-text-1);
+          color: var(--td-text-color-primary);
         }
       }
 
@@ -232,16 +231,16 @@ export default defineComponent({
 
   .professional-card {
     border: 1px solid var(--td-border-level-2-color);
-    background: linear-gradient(120deg, var(--color-bg-2) 0%, var(--color-bg-1) 100%);
+    background: linear-gradient(120deg, var(--td-bg-color-component) 0%, var(--td-bg-color-container) 100%);
 
     .card-title {
-      color: var(--success-6);
+      color: var(--td-success-color);
     }
   }
 
   .community-card {
     .card-title {
-      color: var(--warning-6);
+      color: var(--td-warning-color);
     }
   }
 
@@ -252,7 +251,7 @@ export default defineComponent({
   }
 
   .resources-section, .feedback-section {
-    background: var(--color-bg-2);
+    background: var(--td-bg-color-component);
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     padding: 24px;
@@ -262,11 +261,11 @@ export default defineComponent({
       font-size: 20px;
       font-weight: 600;
       margin: 0 0 16px 0;
-      color: var(--color-text-1);
+      color: var(--td-text-color-primary);
     }
 
     .resource-list {
-      color: var(--color-text-2);
+      color: var(--td-text-color-secondary);
       line-height: 1.6;
 
       .separator {

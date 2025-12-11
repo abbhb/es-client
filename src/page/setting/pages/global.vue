@@ -28,7 +28,7 @@
           <template #label>
             <span>排除指定索引</span>
             <t-tooltip content="支持正则表达式" placement="top" effect="light">
-              <icon-question-circle style="margin-left: 5px;"/>
+              <help-circle-icon style="margin-left: 5px;"/>
             </t-tooltip>
           </template>
           <t-tag-input v-model="instance.homeExcludeIndices" allow-clear/>
@@ -37,7 +37,7 @@
           <template #label>
             <span>显示指定索引</span>
             <t-tooltip content="支持正则表达式" placement="top" effect="light">
-              <icon-question-circle style="margin-left: 5px;"/>
+              <help-circle-icon style="margin-left: 5px;"/>
             </t-tooltip>
           </template>
           <t-tag-input v-model="instance.homeIncludeIndices" allow-clear style=""/>
@@ -116,7 +116,7 @@
           <template #label>
             <span>保存上次选择的连接</span>
             <t-tooltip content="保存后，下一次打开es-client自动选中该链接" placement="top" effect="light">
-              <icon-question-circle style="margin-left: 5px;"/>
+              <help-circle-icon style="margin-left: 5px;"/>
             </t-tooltip>
           </template>
           <t-switch v-model="instance.lastUrl" >
@@ -135,6 +135,7 @@
 import {useGlobalSettingStore} from "@/store";
 import ViewTypeEnum from "@/enumeration/ViewTypeEnum";
 import {storeToRefs} from "pinia";
+import {HelpCircleIcon} from "tdesign-icons-vue-next";
 
 const {globalSetting: instance} = storeToRefs(useGlobalSettingStore());
 
@@ -159,18 +160,6 @@ const {globalSetting: instance} = storeToRefs(useGlobalSettingStore());
 .setting-global {
   margin-top: 7px;
   height: calc(100vh - 47px);
-
-  .toc {
-    position: fixed;
-    top: 108px;
-    right: 24px;
-    max-height: calc(100vh - 176px);
-    overflow: auto;
-    background-color: var(--color-neutral-2);
-    border: 1px solid var(--color-neutral-3);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    z-index: 2;
-  }
 
   .arco-form-item-wrapper-col {
     width: 350px;

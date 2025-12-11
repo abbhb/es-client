@@ -126,19 +126,5 @@ export default defineComponent({
     margin-bottom: 5px;
   }
 
-  .summary-alias {
-
-    .alias-close {
-      margin-left: 4px;
-      padding: 2px;
-
-      &:hover {
-        background-color: var(--color-fill-3);
-        border-radius: 50%;
-        cursor: pointer;
-      }
-    }
-
-  }
 }
 </style>
