@@ -1,5 +1,5 @@
 <template>
-  <div class="senior-search">
+  <div class="senior-search material-card">
     <SplitPanel v-model="size">
       <template #left>
         <dev-tool-file />
@@ -24,9 +24,6 @@ const size = useSessionStorage(LocalNameEnum.KEY_DEV_TOOL_SIZE, 400);
   left: 8px;
   right: 8px;
   bottom: 8px;
-  background-color: var(--td-bg-color-container);
-  color: var(--td-text-color-primary);
-  border-radius: var(--td-radius-medium);
   overflow: hidden;
 
 }

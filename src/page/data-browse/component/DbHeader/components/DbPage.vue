@@ -24,7 +24,7 @@ const limit = computed({
 const offset = computed({
   get: () => (pageNum.value - 1) * pageSize.value,
   set: (value) => {
-    pageNum.value = Math.ceil(value / pageSize.value);
+    pageNum.value = Math.ceil(value / pageSize.value) + 1;
     run();
   }
 });

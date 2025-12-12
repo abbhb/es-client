@@ -21,7 +21,7 @@
       <t-space>
         <t-button theme="primary" variant="text" shape="square" size="small">
           <template #icon>
-            <questionnaire-icon/>
+            <help-circle-icon/>
           </template>
         </t-button>
       </t-space>
@@ -32,7 +32,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {HistoryIcon, PlayIcon, QuestionnaireIcon} from "tdesign-icons-vue-next";
+import {HelpCircleIcon, HistoryIcon, PlayIcon} from "tdesign-icons-vue-next";
 import {UseDataBrowserQueryContent} from "@/hooks";
 import SqlEditor from "@/components/SqlEditor/SqlEditor.vue";
 import {SqlEditorFunc} from "@/components/SqlEditor";

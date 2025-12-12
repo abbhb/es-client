@@ -1,5 +1,5 @@
 <template>
-  <div class="abs-4 db-card">
+  <div class="abs-4 material-card">
     <div class="data-browser-right abs-4">
       <div class="abs-0">
         <!--    顶部tab-->

@@ -1,5 +1,5 @@
 <template>
-  <div class="base-spin">
+  <div class="base-spin material-card">
     <div v-for="tab in tabs" :key="tab.id" class="base-search">
       <!-- 主要显示区域 -->
       <div class="base-search-main full-screen">

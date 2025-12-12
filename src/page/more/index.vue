@@ -1,7 +1,7 @@
 <template>
-    <div class="more">
-        <router-view/>
-    </div>
+  <div class="more material-card">
+    <router-view/>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -9,12 +9,12 @@
 
 <style lang="less">
 .more {
-    position: absolute;
-    top: 0;
-    left: 7px;
-    right: 7px;
-    bottom: 7px;
-    padding: 0;
-    overflow: auto;
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  right: 7px;
+  bottom: 7px;
+  padding: 0;
+  overflow: auto;
 }
 </style>

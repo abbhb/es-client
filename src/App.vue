@@ -8,8 +8,7 @@
         <app-side/>
         <!-- 内容-->
         <t-content class="relative">
-          <t-loading :loading="loading" :tip="text" class="relative w-full h-full"
-                     style="background-color: var(--td-bg-color-container)">
+          <t-loading :loading="loading" :tip="text" class="relative w-full h-full">
             <router-view/>
           </t-loading>
         </t-content>

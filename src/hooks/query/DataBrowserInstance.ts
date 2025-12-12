@@ -70,7 +70,6 @@ export const useDataBrowserInstance = (index: string): UseDataBrowserInstance =>
     if (loading.value) return;
     loading.value = true;
     const {trackTotalHitsMode, trackTotalHitsValue} = useGlobalSettingStore();
-    console.log("开始搜索")
     client.dataSearch({
       index,
       pageNum: pageNum.value,
@@ -83,7 +82,6 @@ export const useDataBrowserInstance = (index: string): UseDataBrowserInstance =>
       trackTotalHitsValue
     })
       .then((r) => {
-        console.log("搜索完成", r)
         if (renderColumn) {
           columns.value = r.columns;
         }

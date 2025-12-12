@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="px-16px">
     <t-typography-title level="h1" align="center">隐私协议</t-typography-title>
 
     <t-typography-paragraph>更新日期：2023年03月11日</t-typography-paragraph>

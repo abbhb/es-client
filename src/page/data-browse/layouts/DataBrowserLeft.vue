@@ -1,8 +1,7 @@
 <template>
-  <div class="db-card abs-4">
+  <div class="material-card abs-4">
     <div class="abs-4 overflow-auto" ref="dataBrowserLeft">
-      <t-input placeholder="请输入关键字" clearable></t-input>
-      <div class="absolute top-40px left-0 right-0 bottom-0 overflow-auto">
+      <div class="abs-0 overflow-auto">
         <t-tree :data activable line :scroll="{
         rowHeight: 34,
         bufferSize: 10,

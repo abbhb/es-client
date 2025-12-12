@@ -33,7 +33,7 @@
         @click="openDbOperatorDoc"
       >
         <template #icon>
-          <questionnaire-icon />
+          <help-circle-icon />
         </template>
       </t-button>
       <!-- 操作 -->
@@ -58,7 +58,7 @@ import DbSimpleItem from "@/page/data-browse/component/DbHeader/components/DbSim
 import DbPage from "@/page/data-browse/component/DbHeader/components/DbPage.vue";
 import DbTableHeader from "@/page/data-browse/component/DbHeader/components/DbTableHeader.vue";
 import {
-  AddIcon,
+  AddIcon, HelpCircleIcon,
   MoreIcon,
   PrintIcon,
   QuestionnaireIcon,
