@@ -112,7 +112,7 @@ function openExportDialog() {
   showDataExportDrawer({
     name: `${idx} - 数据浏览导出`,
     index: idx,
-    search: buildSearch(),
+    search: buildSearch() as any,
   });
 }
 

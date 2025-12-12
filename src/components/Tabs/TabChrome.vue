@@ -11,19 +11,10 @@
       @click="select(item.value)"
       @keydown.enter.prevent="select(item.value)"
     >
-      <span class="max-w-[200px] truncate mr-8px" :title="item.label ?? item.value">{{
-          item.label ?? item.value
-        }}</span>
-      <t-button
-        theme="primary"
-        variant="text"
-        shape="circle"
-        size="small"
-        aria-label="关闭标签"
-        @click.stop="onRemove(item)"
-      >
-        <CloseIcon size="14px"/>
-      </t-button>
+      <div class="tab-title" :title="item.label ?? item.value">{{ item.label ?? item.value }}</div>
+      <div class="close-icon" @click.stop="onRemove(item)">
+        <CloseIcon aria-label="关闭标签" />
+      </div>
     </div>
   </div>
 </template>
@@ -47,23 +38,53 @@ const onRemove = (tab: SelectOption) => emit('remove', tab);
   height: 32px;
   line-height: 32px;
   overflow-x: auto;
+  overflow-y: hidden;
+  background-color: var(--td-bg-color-component);
+  border-radius: var(--td-radius-medium);
 
   .tab-chrome-pane {
     //group relative flex items-center px-4 h-32px
     color: var(--td-text-color-primary) /* var(--td-text-color-primary) */;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: 8px;
+    padding-right: 4px;
     background-color: var(--td-bg-color-container) /* var(--td-bg-color-container) */;
-    border-top-left-radius: var(--td-radius-medium);
-    border-top-right-radius: var(--td-radius-medium);
+    border-radius: var(--td-radius-medium);
     align-items: center;
     display: flex;
-    height: 32px;
+    height: 20px;
     position: relative;
     cursor: pointer;
+    margin: 4px;
+    border: 2px solid var(--td-border-level-1-color);
+    transition: all 0.2s ease-in-out;
+    line-height: 16px;
+    gap: 4px;
+
+    .tab-title {
+      height: 16px;
+    }
+
+    .close-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 8px;
+      transition: all 0.2s ease-in-out;
+      &:hover {
+        background-color: var(--td-bg-color-container);
+      }
+    }
 
     &.active {
-      background-color: var(--td-bg-color-container-active);
+      background-color: var(--td-brand-color-2);
+      border: 2px solid var(--td-brand-color);
+      color: var(--td-brand-color);
+      &:hover {
+        background-color: var(--td-brand-color-2);
+      }
+    }
+
+    &:hover {
+      background-color: var(--td-bg-color-container-hover);
     }
   }
 }
