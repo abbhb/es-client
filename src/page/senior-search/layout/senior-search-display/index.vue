@@ -1,5 +1,5 @@
 <template>
-  <div class="senior-search-display">
+  <div class="senior-search-display material-card">
     <div class="view">
       <!-- 结果集渲染 -->
       <senior-search-data-view v-show="displayActive === 'result'" :view="seniorSearchView" :data="show" :error="error"/>

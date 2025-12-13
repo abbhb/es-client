@@ -1,16 +1,16 @@
 <template>
-    <div class="senior-search">
+  <div class="senior-search">
 
-      <SplitPanel v-model="panelSize">
-        <template #left>
-          <senior-search-editor/>
-        </template>
-        <template #right>
-          <senior-search-display/>
-        </template>
-      </SplitPanel>
+    <SplitPanel v-model="panelSize">
+      <template #left>
+        <senior-search-editor/>
+      </template>
+      <template #right>
+        <senior-search-display/>
+      </template>
+    </SplitPanel>
 
-    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>

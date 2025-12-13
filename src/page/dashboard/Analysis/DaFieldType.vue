@@ -71,7 +71,7 @@ function exec() {
   tokens.value = [];
   loading.value = true;
   const {client} = useUrlStore();
-  if (!client) return MessageUtil.error("请先选择连接");
+  if (!client) return MessageUtil.error("请选择链接");
   client.indexAnalyze(config.value.index, config.value.field, config.value.text)
     .then((rsp) => (tokens.value = rsp.tokens))
     .catch((e) => MessageUtil.error("执行失败", e))

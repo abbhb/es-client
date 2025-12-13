@@ -13,7 +13,7 @@
       @menu-click="contextMenuClickEvent"
     >
       <vxe-column field="_id" title="_id" fixed="left" :width="200" show-overflow="tooltip" />
-      <vxe-column type="expand" width="80" title="详细">
+      <vxe-column type="expand" width="80" title="详细" fixed="left">
         <template #content="{ row }">
           <div class="expand-wrapper h-300px">
             <MonacoView :value="row['_source']" />

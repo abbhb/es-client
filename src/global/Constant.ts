@@ -1,6 +1,7 @@
 import {Repository} from "@/view/Data";
 import UpdateLog from '@/data/UpdateLog'
 import PluginModeEnum from "@/enumeration/PluginModeEnum";
+import {TableColumn} from "$/shared/common/TableColumn";
 
 const mode: PluginModeEnum = import.meta.env.VITE_MODE as PluginModeEnum;
 
@@ -49,3 +50,17 @@ export const Constant = {
     active: 'https://mbd.pub/o/bread/YZWZmJdvZg=='
   }
 }
+
+export const metaColumn = (): Array<TableColumn> => ([{
+  field: '_type',
+  title: '_type',
+  width: 120
+},{
+  field: '_score',
+  title: '_score',
+  width: 120
+},{
+  field: '_index',
+  title: '_index',
+  width: 120
+}])

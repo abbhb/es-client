@@ -1,28 +1,15 @@
 <template>
-  <div class="home">
+  <div class="abs-0" style="background-color: var(--td-bg-color-container)">
     <!-- 上面的搜索条件 -->
-    <div class="home-option">
+    <div class="flex justify-between my-8px mx-12px">
       <t-input-group>
         <!-- 输入框 -->
         <t-input v-model="keyword" placeholder="请输入索引名称" style="width: 45vw;height: 32px;" clearable/>
-        <t-popup trigger="click" show-arrow>
-          <t-button theme="default" shape="square" variant="outline">
-            <template #icon>
-              <ellipsis-icon />
-            </template>
-          </t-button>
-          <template #content>
-            <t-descriptions class="home-query-status">
-              <t-descriptions-item label="状态">
-                <t-radio-group v-model="status" type="button">
-                  <t-radio :value="Status.NONE">忽略</t-radio>
-                  <t-radio :value="Status.OPEN">开启</t-radio>
-                  <t-radio :value="Status.CLOSE">关闭</t-radio>
-                </t-radio-group>
-              </t-descriptions-item>
-            </t-descriptions>
-          </template>
-        </t-popup>
+        <t-select v-model="status" type="button" auto-width>
+          <t-option :value="Status.NONE" label="忽略">忽略</t-option>
+          <t-option :value="Status.OPEN" label="开启">开启</t-option>
+          <t-option :value="Status.CLOSE" label="关闭">关闭</t-option>
+        </t-select>
       </t-input-group>
       <!-- 新增索引 -->
       <t-button theme="primary" style="margin-left: 10px" @click="indexAdd()" :disabled="!url">
@@ -30,21 +17,14 @@
       </t-button>
     </div>
     <!-- 索引容器 -->
-    <div class="home-container" ref="homeContainer">
-      <a-list class="home-index-items" :data="items" :virtual-list-props="virtualListProps"
-              :scrollbar="true"
-              :bordered="false" :split="false">
-        <template #item="{ item }">
-          <a-list-item :key="item.name">
-            <index-item :index="item"/>
-          </a-list-item>
-        </template>
-        <template #empty>
-          <empty-result title="空空如也"/>
-        </template>
-      </a-list>
-      <t-back-top container=".home-container .arco-scrollbar-container"/>
-    </div>
+    <t-list size="small" :scroll="{ type: 'virtual', rowHeight: 109, bufferSize: 10, threshold: 20 }"
+            :split="false" style="height: calc(100vh - 98px)">
+      <a-list-item v-for="{item} in results" :key="item.name">
+        <index-item :index="item"/>
+      </a-list-item>
+    </t-list>
+    <empty-result v-if="results.length === 0" title="空空如也"/>
+    <t-back-top container=".t-list"/>
   </div>
 </template>
 
@@ -54,19 +34,11 @@ import IndexItem from "./components/index-item.vue";
 import {useFuse} from "@vueuse/integrations/useFuse";
 import {Status, useHomeStore} from "@/store/components/HomeStore";
 import {indexAdd} from "@/page/home/components/IndexAdd";
-import {EllipsisIcon} from "tdesign-icons-vue-next";
-
-
-const size = useWindowSize();
 
 const keyword = useHomeStore().keyword;
-const order = useHomeStore().order;
 const status = useHomeStore().status;
 
 const url = computed(() => useUrlStore().url);
-const virtualListProps = computed(() => ({
-  height: size.height.value - 40 - 15 - 42
-}))
 const indices = computed(() => useIndexStore().list);
 
 const {results} = useFuse(keyword, indices, {
@@ -80,11 +52,7 @@ const {results} = useFuse(keyword, indices, {
   }
 });
 
-const items = computed(() => {
-  return results.value.map(result => result.item)
-})
 </script>
 
 <style lang="less">
-@import url(./index.less);
 </style>

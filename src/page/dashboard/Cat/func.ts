@@ -12,7 +12,7 @@ export interface CatTableResult {
  */
 export async function cat(url: string): Promise<CatTableResult> {
   const { client } = useUrlStore();
-  if (!client) return Promise.reject("请选择一个索引");
+  if (!client) return Promise.reject("请选择链接");
   const rsp = await client.getText(url);
 
   const columns = new Array<PrimaryTableCol>();

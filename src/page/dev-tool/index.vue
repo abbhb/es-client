@@ -1,5 +1,5 @@
 <template>
-  <div class="senior-search material-card">
+  <div class="abs-0">
     <SplitPanel v-model="size">
       <template #left>
         <dev-tool-file />
@@ -18,13 +18,4 @@ import LocalNameEnum from "@/enumeration/LocalNameEnum";
 const size = useSessionStorage(LocalNameEnum.KEY_DEV_TOOL_SIZE, 400);
 </script>
 <style scoped lang="less">
-.senior-search {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  right: 8px;
-  bottom: 8px;
-  overflow: hidden;
-
-}
 </style>

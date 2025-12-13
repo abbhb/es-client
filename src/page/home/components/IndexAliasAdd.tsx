@@ -19,6 +19,7 @@ export function indexAliasAdd(): Promise<string> {
       draggable: true,
       onConfirm: () => {
         resolve(name.value);
+        d.destroy();
       },
       onCancel: () => {
         reject('cancel');

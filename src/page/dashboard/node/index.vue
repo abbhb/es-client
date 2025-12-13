@@ -141,7 +141,7 @@ function getNodeState() {
   }
   nodeStateLoad.value = true;
   const {client} = useUrlStore();
-  if (!client) return MessageUtil.error("请选择实例");
+  if (!client) return MessageUtil.error("请选择链接");
   client.getJson<IndexNodeState>("/_nodes/stats")
     .then((rsp) => (nodeState.value = rsp))
     .catch((e) => MessageUtil.error("节点状态获取失败", e))

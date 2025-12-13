@@ -1,5 +1,5 @@
 <template>
-  <div class="senior-search-file">
+  <div class="abs-4 material-card">
     <!-- 工具栏 -->
     <div class="toolbar">
       <t-space size="small">
@@ -120,8 +120,6 @@ import {
   FileCodeIcon,
   FolderAddIcon,
   FolderIcon,
-  InternetIcon,
-  LinkIcon,
   MoreIcon,
   RefreshIcon
 } from "tdesign-icons-vue-next";
@@ -171,18 +169,10 @@ onMounted(() => {
 });
 </script>
 <style scoped lang="less">
-.senior-search-file {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--td-bg-color-container);
-}
 
 .toolbar {
   padding: 8px 12px;
   border-bottom: 1px solid var(--td-border-level-1-color);
-  background-color: var(--td-bg-color-container);
   flex-shrink: 0;
 }
 

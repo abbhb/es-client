@@ -20,13 +20,13 @@
     <div class="base-scroll">
       <!-- 固定的标签 -->
       <div class="fix-scroll" v-for="(item, index) in items" v-show="itemActive === index">
-        <table-viewer v-if="item.view === ViewTypeEnum.TABLE && !item.error" :value="item.data"/>
+        <table-viewer v-if="item.view === ViewTypeEnum.TABLE && !item.error" :data="item.data" height="100%"/>
         <monaco-view v-else/>
       </div>
       <!-- 当前的标签 -->
       <div class="current-scroll" v-show="itemActive === -1">
         <!-- 表格，且没有错误 -->
-        <table-viewer v-if="view === ViewTypeEnum.TABLE && !error" :value="data"/>
+        <table-viewer v-if="view === ViewTypeEnum.TABLE && !error" :data="data" height="100%"/>
         <monaco-view v-else :value="data"/>
       </div>
     </div>

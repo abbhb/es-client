@@ -231,7 +231,7 @@ export default defineComponent({
 
   .professional-card {
     border: 1px solid var(--td-border-level-2-color);
-    background: linear-gradient(120deg, var(--td-bg-color-component) 0%, var(--td-bg-color-container) 100%);
+    background: linear-gradient(120deg, var(--td-brand-color-3) 0%, var(--td-brand-color-5) 100%);
 
     .card-title {
       color: var(--td-success-color);

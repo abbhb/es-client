@@ -1,5 +1,5 @@
 <template>
-  <div class="senior-search-side" :style="{height: height}">
+  <div class="senior-search-side material-card" :style="{height: height}">
     <!-- 编辑器 -->
     <div class="senior-search-editor h-full flex w-full">
       <!-- 操作栏 -->

@@ -10,7 +10,9 @@
           />
         </template>
         <template #right>
-          <monaco-view :value="data"/>
+          <TableViewer v-if="devToolViewer === ViewTypeEnum.TABLE" :data="data" :show-meta="devToolShowMeta"
+                       height="100%"/>
+          <monaco-view v-else :value="data"/>
         </template>
       </SplitPanel>
     </t-loading>
@@ -18,6 +20,8 @@
 </template>
 <script lang="ts" setup>
 import {UseSeniorFileItemContent} from "@/hooks/query/DevToolFileItemContent";
+import {useGlobalSettingStore} from "@/store";
+import ViewTypeEnum from "@/enumeration/ViewTypeEnum";
 
 const props = defineProps({
   content: {
@@ -32,6 +36,8 @@ const props = defineProps({
 
 
 const {content, data, init, size} = props.content;
+const devToolViewer = computed(() => useGlobalSettingStore().devToolViewer);
+const devToolShowMeta = computed(() => useGlobalSettingStore().devToolShowMeta);
 
 // 跟踪原始内容以检测修改状态
 const originalContent = ref("");

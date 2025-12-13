@@ -7,11 +7,12 @@
     :row-config="rowConfig"
     empty-text="什么也没有"
   >
-    <vxe-column type="checkbox" width="60"></vxe-column>
-    <vxe-column type="expand" width="80" title="详细">
+
+    <vxe-column field="_id" title="_id" fixed="left" :width="200" show-overflow="tooltip" />
+    <vxe-column type="expand" width="80" title="详细" fixed="left">
       <template #content="{ row }">
         <div class="expand-wrapper h-300px">
-          <MonacoView :value="row['_source']" />
+          <MonacoView :value="row['_source']"/>
         </div>
       </template>
     </vxe-column>
@@ -21,20 +22,22 @@
       :field="column.field"
       :title="column.title"
       :visible="column.show"
-      :width="column.field === '_id' ? 180 : column.width"
+      :width="column.width"
       show-overflow="tooltip"
     />
   </vxe-table>
 </template>
 <script lang="ts" setup>
-import { searchResultToTable } from "$/elasticsearch-client/components/SearchResultToTable";
-import { columnConfig, rowConfig } from "@/page/data-browse/component/DbContainer/args";
+import {searchResultToTable} from "$/elasticsearch-client/components/SearchResultToTable";
+import {columnConfig, rowConfig} from "@/page/data-browse/component/DbContainer/args";
 import MonacoView from "@/components/view/MonacoView/index.vue";
-import { DataSearchColumnConfig } from "$/elasticsearch-client";
+import {DataSearchColumnConfig} from "$/elasticsearch-client";
+import {metaColumn} from "@/global/Constant";
 
 const props = defineProps({
-  data: Object as PropType<string>,
-  height: { type: Number, default: 500 }
+  data: String,
+  height: {type: [Number, String], default: 500},
+  showMeta: {type: Boolean}
 });
 
 // 显示的列
@@ -51,10 +54,16 @@ watch(
     total.value = 0;
     if (value) {
       const res = searchResultToTable(value);
-      columns.value = res.columns;
+      columns.value = [
+        ...(props.showMeta ? metaColumn() : []),
+        ...res.columns
+      ];
       records.value = res.records;
       total.value = res.total;
     }
+  },
+  {
+    immediate: true
   }
 );
 </script>

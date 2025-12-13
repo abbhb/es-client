@@ -125,7 +125,7 @@ function getInfoData() {
   }
   infoLoad.value = true;
   const {client} = useUrlStore();
-  if (!client) return MessageUtil.error("请先选择连接");
+  if (!client) return MessageUtil.error("请选择链接");
   client.info()
     .then((rsp) => (info.value = rsp))
     .catch((e) => MessageUtil.error("节点信息获取失败", e))
@@ -140,7 +140,7 @@ function getClusterHealth() {
   }
   clusterHealthLoad.value = true;
   const {client} = useUrlStore();
-  if (!client) return MessageUtil.error("请先选择连接");
+  if (!client) return MessageUtil.error("请选择链接");
   client.clusterHealth()
     .then((rsp) => (clusterHealth.value = rsp))
     .catch((e) => MessageUtil.error("集群健康值获取失败", e))

@@ -30,6 +30,10 @@ export const useGlobalSettingStore = defineStore('global-setting', () => {
   const trackTotalHitsMode = computed(() => globalSetting.value.trackTotalHitsMode);
   const trackTotalHitsValue = computed(() => globalSetting.value.trackTotalHitsValue);
   const indexOrderBy = computed(() => globalSetting.value.indexOrderBy || 'asc');
+  const dataBrowserShowMeta = computed((): boolean => Optional.ofNullable(globalSetting.value.dataBrowserShowMeta).orElse(false));
+  const baseSearchShowMeta = computed((): boolean => Optional.ofNullable(globalSetting.value.baseSearchShowMeta).orElse(false));
+  const devToolViewer = computed((): ViewTypeEnum => Optional.ofNullable(globalSetting.value.devToolViewer).orElse(ViewTypeEnum.EDITOR));
+  const devToolShowMeta = computed((): boolean => Optional.ofNullable(globalSetting.value.devToolShowMeta).orElse(false));
 
   // track_total_hits
   const trackTotalHits = computed(() => {
@@ -46,12 +50,10 @@ export const useGlobalSettingStore = defineStore('global-setting', () => {
   async function init() {
     let globalSettingWrap = await getFromOneByAsync<GlobalSetting>(LocalNameEnum.SETTING_GLOBAL, getDefaultGlobalSetting());
     globalSetting.value = globalSettingWrap.record;
+    console.log("初始化全局设置")
   }
 
-  function setGlobalSetting(setting: GlobalSetting) {
-    globalSetting.value = setting;
-    sync();
-  }
+  watchDebounced(globalSetting, sync);
 
   function sync() {
     if (lock) {
@@ -83,8 +85,15 @@ export const useGlobalSettingStore = defineStore('global-setting', () => {
     getHomeExcludeIndices,
     getHomeIncludeIndices,
     pageSize,
+
+    dataBrowserShowMeta,
     baseDefaultViewer,
+    baseSearchShowMeta,
+    devToolViewer,
+    devToolShowMeta,
     seniorDefaultViewer,
+
+
     trackTotalHitsMode,
     trackTotalHitsValue,
     trackTotalHits,
@@ -93,6 +102,5 @@ export const useGlobalSettingStore = defineStore('global-setting', () => {
 
     // Actions
     init,
-    setGlobalSetting,
   }
 });

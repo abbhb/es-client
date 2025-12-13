@@ -67,7 +67,7 @@ export const useDataBrowserInstance = (index: string, type: BaseBrowserBaseType)
 
   const run = (renderColumn = false) => {
     const {client} = useUrlStore();
-    if (!client) return MessageUtil.warning("请选择索引");
+    if (!client) return MessageUtil.warning("请选择链接");
     // if (loading.value) return MessageUtil.warning("正在查询中，请稍后");
     if (loading.value) return;
     loading.value = true;
@@ -100,7 +100,7 @@ export const useDataBrowserInstance = (index: string, type: BaseBrowserBaseType)
 
   const add = (data: string) => {
     const {client} = useUrlStore();
-    if (!client) return MessageUtil.warning("请选择索引");
+    if (!client) return MessageUtil.warning("请选择链接");
     if (loading.value) return;
     loading.value = true;
     client.insertDoc(index, data)
@@ -117,7 +117,7 @@ export const useDataBrowserInstance = (index: string, type: BaseBrowserBaseType)
 
   const update = (docId: string, data: string) => {
     const {client} = useUrlStore();
-    if (!client) return MessageUtil.warning("请选择索引");
+    if (!client) return MessageUtil.warning("请选择链接");
     if (loading.value) return;
     loading.value = true;
     client.updateDoc(index, docId, data)
@@ -133,7 +133,7 @@ export const useDataBrowserInstance = (index: string, type: BaseBrowserBaseType)
 
   const remove = (docId: string) => {
     const {client} = useUrlStore();
-    if (!client) return MessageUtil.warning("请选择索引");
+    if (!client) return MessageUtil.warning("请选择链接");
     if (loading.value) return;
     (() => {
       return client.deleteDoc(index, docId);

@@ -66,6 +66,11 @@ export interface GlobalSetting {
   /*--------------------------------- 显示设置 ---------------------------------*/
 
   /**
+   * 数据浏览 - 显示元数据
+   */
+  dataBrowserShowMeta: boolean
+
+  /**
    * 默认分页大小
    */
   pageSize: number;
@@ -76,9 +81,25 @@ export interface GlobalSetting {
   baseDefaultViewer: ViewTypeEnum;
 
   /**
+   * 基础搜索 - 显示元数据
+   */
+  baseSearchShowMeta: boolean;
+
+  /**
+   * 开发者工具 - 视图
+   */
+  devToolViewer: ViewTypeEnum;
+
+  /**
+   * 开发者工具 - 显示元数据
+   */
+  devToolShowMeta: boolean;
+
+  /**
    * 高级 - 默认视图
    */
   seniorDefaultViewer: ViewTypeEnum;
+
 
   /*--------------------------------- 其他设置 ---------------------------------*/
 
@@ -111,7 +132,11 @@ export function getDefaultGlobalSetting(): GlobalSetting {
 
     // 显示设置
     pageSize: 20,
+    dataBrowserShowMeta: false,
     baseDefaultViewer: ViewTypeEnum.EDITOR,
+    baseSearchShowMeta: false,
+    devToolViewer: ViewTypeEnum.EDITOR,
+    devToolShowMeta: false,
     seniorDefaultViewer: ViewTypeEnum.EDITOR,
 
     // 其他设置

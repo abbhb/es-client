@@ -6,6 +6,7 @@ import {
   FormItem,
   Input,
   InputNumber,
+  LoadingPlugin,
   Option,
   Select,
   TabPanel,
@@ -15,9 +16,7 @@ import {IndexCreate} from "@/domain/es/IndexCreate";
 import {getDefaultIndexInstance, IndexInstance} from "@/domain/IndexInstance";
 import {useSeniorSearchStore} from "@/store/components/SeniorSearchStore";
 import MessageUtil from "@/utils/model/MessageUtil";
-import indexApi from "@/components/es/IndexApi";
-import {useIndexStore} from "@/store";
-import useLoadingStore from "@/store/LoadingStore";
+import {useIndexStore, useUrlStore} from "@/store";
 import MonacoEditor from "@/components/monaco-editor/index.vue";
 import {formatJsonString, parseJsonWithBigIntSupport, stringifyJsonWithBigIntSupport} from "$/util";
 import {copyText} from "@/utils/BrowserUtil";
@@ -166,12 +165,17 @@ function copyIndex(index: Ref<IndexInstance>, modalReturn: DialogInstance) {
 }
 
 function addIndex(index: Ref<IndexInstance>, modalReturn: DialogInstance) {
-  useLoadingStore().start("正在新增索引")
+  const {client} = useUrlStore();
+  if (!client) return MessageUtil.error("请选择链接");
+  const instance = LoadingPlugin({text: "正在新增索引"});
   // 新增
-  indexApi(index.value.name).create(getIndexCreate(index))
-    .then(res => MessageUtil.success(res, useIndexStore().reset))
+  client.createIndex(index.value.name, stringifyJsonWithBigIntSupport(getIndexCreate(index)))
+    .then(res => {
+      MessageUtil.success(res);
+      useIndexStore().refreshIndex(index.value.name).catch(e => MessageUtil.error('索引刷新错误，请手动刷新', e));
+    })
     .catch(e => MessageUtil.error('索引创建错误', e))
-    .finally(useLoadingStore().close);
+    .finally(() => instance.hide());
   modalReturn.destroy()
 }
 

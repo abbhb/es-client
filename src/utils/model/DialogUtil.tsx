@@ -43,7 +43,7 @@ export function showInstanceInfoDialog(title: string, url: string, options?: Dia
   useLoadingStore().start("开始获取数据，请稍后");
   const {client} = useUrlStore();
   if (!client) {
-    MessageUtil.error("请选择一个实例");
+    MessageUtil.error("请选择链接");
     return;
   }
   client.getText(url)

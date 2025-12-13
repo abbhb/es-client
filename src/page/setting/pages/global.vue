@@ -1,6 +1,6 @@
 <template>
   <div class="setting-global">
-    <div style="overflow: auto;height: calc(100vh - 47px);" id="setting-global-scroller">
+    <div style="overflow: auto;height: calc(100vh - 64px);" id="setting-global-scroller">
       <t-form :model="instance" style="padding: 8px">
 
         <t-divider id="new">新建索引</t-divider>
@@ -97,13 +97,36 @@
         <t-form-item label-align="top" label="默认分页大小" id="pageSize">
           <t-input-number v-model="instance.pageSize"></t-input-number>
         </t-form-item>
+        <t-form-item label-align="top" label="数据浏览 - 是否显示元数据">
+          <t-switch v-model="instance.dataBrowserShowMeta">
+            <template #label="checked">{{ checked.value ? '显示' : '不显示' }}</template>
+          </t-switch>
+        </t-form-item>
         <t-form-item label-align="top" label="基础查询 - 默认视图" id="baseDefaultViewer">
           <t-radio-group v-model="instance.baseDefaultViewer">
             <t-radio label="表格视图" :value="ViewTypeEnum.TABLE">表格视图</t-radio>
             <t-radio label="编辑器视图" :value="ViewTypeEnum.EDITOR">编辑器视图</t-radio>
           </t-radio-group>
         </t-form-item>
-        <t-form-item label-align="top" label="高级查询 - 默认视图" id="seniorDefaultViewer">
+        <t-form-item v-if="instance.baseDefaultViewer === ViewTypeEnum.TABLE" label-align="top"
+                     label="基础查询 - 是否显示元数据">
+          <t-switch v-model="instance.baseSearchShowMeta">
+            <template #label="checked">{{ checked.value ? '显示' : '不显示' }}</template>
+          </t-switch>
+        </t-form-item>
+        <t-form-item label-align="top" label="开发者工具 - 默认视图" id="devToolViewer">
+          <t-radio-group v-model="instance.devToolViewer">
+            <t-radio label="表格视图" :value="ViewTypeEnum.TABLE">表格视图</t-radio>
+            <t-radio label="编辑器视图" :value="ViewTypeEnum.EDITOR">编辑器视图</t-radio>
+          </t-radio-group>
+        </t-form-item>
+        <t-form-item v-if="instance.devToolViewer === ViewTypeEnum.TABLE" label-align="top"
+                     label="开发者工具 - 是否显示元数据">
+          <t-switch v-model="instance.devToolShowMeta">
+            <template #label="checked">{{ checked.value ? '显示' : '不显示' }}</template>
+          </t-switch>
+        </t-form-item>
+        <t-form-item label-align="top" label="高级查询 - 默认视图" id="seniorDefaultViewer" help="即将移除">
           <t-radio-group v-model="instance.seniorDefaultViewer">
             <t-radio label="表格视图" :value="ViewTypeEnum.TABLE">表格视图</t-radio>
             <t-radio label="编辑器视图" :value="ViewTypeEnum.EDITOR">编辑器视图</t-radio>
@@ -119,8 +142,8 @@
               <help-circle-icon style="margin-left: 5px;"/>
             </t-tooltip>
           </template>
-          <t-switch v-model="instance.lastUrl" >
-            <template #label="checked">{{checked.value?'保存': '忽略'}}</template>
+          <t-switch v-model="instance.lastUrl">
+            <template #label="checked">{{ checked.value ? '保存' : '忽略' }}</template>
           </t-switch>
         </t-form-item>
 
@@ -129,6 +152,7 @@
     <div class="extend">
       <ActiveExtend/>
     </div>
+    <t-back-top container="#setting-global-scroller"/>
   </div>
 </template>
 <script lang="ts" setup>
@@ -154,12 +178,11 @@ const {globalSetting: instance} = storeToRefs(useGlobalSettingStore());
 }
 
 .like-red {
-  color: rgb(var(--orange-6));
+  color: var(--td-warning-color);
 }
 
 .setting-global {
   margin-top: 7px;
-  height: calc(100vh - 47px);
 
   .arco-form-item-wrapper-col {
     width: 350px;

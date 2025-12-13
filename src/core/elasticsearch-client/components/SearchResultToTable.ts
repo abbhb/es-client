@@ -11,9 +11,6 @@ export function searchResultToTable(response: string): DataSearchResult {
 
   // 提取所有字段名
   const allFields = new Set<string>();
-  allFields.add("_type");
-  allFields.add("_score");
-  allFields.add("_index");
   hits.forEach((hit: any) => {
     if (hit._source) {
       // 扁平化对象后加入集合

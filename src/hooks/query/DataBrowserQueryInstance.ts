@@ -150,7 +150,7 @@ export function useDataBrowserQueryInstance(sql: string, id: string): UseDataBro
       dsl.size = limit.value;
       // 第二步，执行查询
       const {client} = useUrlStore();
-      if (!client) return Promise.reject(new Error("请先连接ES"));
+      if (!client) return Promise.reject(new Error("请选择链接"));
       const res = await client.seniorSearch({
         method: 'POST',
         url: `${query.from}/_search`,

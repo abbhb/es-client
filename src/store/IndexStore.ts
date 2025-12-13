@@ -155,7 +155,7 @@ export const useIndexStore = defineStore("index", () => {
   async function reset(): Promise<void> {
     const { client } = useUrlStore();
     if (!client) {
-      return Promise.reject("链接不存在");
+      return Promise.reject("请选择链接");
     }
     const old = useUrlStore().current;
     clear();
@@ -204,7 +204,7 @@ export const useIndexStore = defineStore("index", () => {
 
   async function refreshIndex(index: IndexItem | string, remove = false) {
     const { client } = useUrlStore();
-    if (!client) return MessageUtil.error("链接不存在");
+    if (!client) return MessageUtil.error("请选择链接");
     const indexName = typeof index === "string" ? index : index.name;
     for (let i = 0; i < indices.value.length; i++) {
       if (indices.value[i].name === indexName) {

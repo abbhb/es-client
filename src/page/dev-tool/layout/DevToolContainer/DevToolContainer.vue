@@ -1,5 +1,5 @@
 <template>
-  <div class="senior-search-container">
+  <div class="abs-4 material-card overflow-hidden">
     <!-- 空状态 -->
     <empty-result
       v-if="activeIds.length === 0"
@@ -136,13 +136,6 @@ const handleCloseAll = async () => {
 };
 </script>
 <style scoped lang="less">
-.senior-search-container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--td-bg-color-page);
-}
 
 // 空状态样式
 .empty-actions {
@@ -208,7 +201,6 @@ const handleCloseAll = async () => {
 .tabs-toolbar {
   padding: 8px 16px;
   border-bottom: 1px solid var(--td-border-level-1-color);
-  background-color: var(--td-bg-color-container);
   flex-shrink: 0;
 }
 

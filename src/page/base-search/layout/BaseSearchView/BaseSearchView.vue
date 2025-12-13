@@ -1,10 +1,13 @@
 <template>
   <div class="base-search-view hljs">
-    <monaco-view :value="result" height="calc(100vh - 108px)" />
+    <TableViewer v-if="view === ViewTypeEnum.TABLE" :data="result" :height="height" :show-meta="baseSearchShowMeta"/>
+    <monaco-view v-else :value="result" :height="`${height}px`"/>
   </div>
 </template>
 <script setup lang="ts">
-import { BaseSearchInstanceResult } from "@/hooks";
+import {BaseSearchInstanceResult} from "@/hooks";
+import {useGlobalSettingStore} from "@/store";
+import ViewTypeEnum from "@/enumeration/ViewTypeEnum";
 
 const props = defineProps({
   tab: {
@@ -12,7 +15,14 @@ const props = defineProps({
     required: true
   }
 });
-const { result } = props.tab;
+
+const size = useWindowSize();
+
+const height = computed(() => size.height.value - 108);
+
+const {result} = props.tab;
+const view = computed(() => useGlobalSettingStore().baseDefaultViewer);
+const baseSearchShowMeta = computed(() => useGlobalSettingStore().baseSearchShowMeta);
 </script>
 <style lang="less">
 .base-search-view {

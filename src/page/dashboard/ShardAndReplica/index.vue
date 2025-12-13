@@ -75,10 +75,10 @@ import {showJson, showJsonDialogByAsync} from "@/utils/model/DialogUtil";
 import {Shard} from "@/domain/es/ClusterState";
 import {useFuse} from "@vueuse/integrations/useFuse";
 import {useIndexManageEvent} from "@/global/BeanFactory";
-import {ClusterNode} from "@/domain/index/ClusterInfo";
 import {stringifyJsonWithBigIntSupport} from "$/util";
 import MessageUtil from "@/utils/model/MessageUtil";
 import {ChevronDownIcon, InfoCircleIcon, SearchIcon, StarFilledIcon} from "tdesign-icons-vue-next";
+import {ClusterNode} from "$/elasticsearch-client";
 
 const UNASSIGNED = "Unassigned";
 

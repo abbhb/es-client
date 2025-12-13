@@ -57,8 +57,7 @@ import {
 } from "@/page/senior-search/layout/senior-search-editor/components/ss-option/SeniorSearchSetting";
 import {openUrl} from "@/utils/BrowserUtil";
 import {Constant} from "@/global/Constant";
-import SaveIcon from "@/icon/SaveIcon.vue";
-import {CloseIcon, CodeIcon, HelpCircleIcon, SettingIcon} from "tdesign-icons-vue-next";
+import {CloseIcon, CodeIcon, HelpCircleIcon, SaveIcon, SettingIcon} from "tdesign-icons-vue-next";
 
 const allowEdit = computed(() => useSeniorSearchStore().id !== 0);
 

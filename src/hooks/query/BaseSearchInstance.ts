@@ -48,7 +48,7 @@ export const useBaseSearchInstance = (): BaseSearchInstanceResult => {
 
   const run = () => {
     const {client} = useUrlStore();
-    if (!client) return MessageUtil.warning("请选择索引");
+    if (!client) return MessageUtil.warning("请选择链接");
     if (loading.value) return;
     const {index: idx, type} = decodeIndexType(index.value);
     const {trackTotalHitsMode, trackTotalHitsValue} = useGlobalSettingStore();
