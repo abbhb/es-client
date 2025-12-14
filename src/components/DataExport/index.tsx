@@ -20,9 +20,9 @@ import {
   Select
 } from "tdesign-vue-next";
 import {exportData} from "@/components/DataExport/func";
-import useLoadingStore from "@/store/LoadingStore";
 import MessageUtil from "@/utils/model/MessageUtil";
 import AppLink from "@/components/AppLink/AppLink.vue";
+import {useLoading} from "@/hooks/UseLoading";
 
 const allowExportTypes: Array<ExportType> = [ExportType.JSON];
 
@@ -97,11 +97,11 @@ export function showDataExportDrawer(config: ConditionExportEvent) {
     </Form>,
     onConfirm() {
       // 打开
-      useLoadingStore().start('开始导出');
+      const loading = useLoading('开始导出');
       exportData(instance.value)
         .then(() => MessageUtil.success("导出成功"))
         .catch(e => MessageUtil.error("导出失败", e))
-        .finally(() => useLoadingStore().close());
+        .finally(() => loading.close());
     }
   });
 }

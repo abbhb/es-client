@@ -3,8 +3,8 @@ import {getItemByDefault, setItem} from "@/utils/utools/DbStorageUtil";
 import {Constant} from "@/global/Constant";
 import MessageUtil from "@/utils/model/MessageUtil";
 import {updateTo3ByWeb} from "@/components/version-manager/updateTo3";
-import useLoadingStore from "@/store/LoadingStore";
 import {statistics} from "@/global/BeanFactory";
+import {useLoading} from "@/hooks/UseLoading";
 
 export enum VersionStatus {
   // 新用户
@@ -52,9 +52,9 @@ function updateTo() {
 }
 
 export function updateTo3() {
-  useLoadingStore().start("链接迁移")
+  const loading = useLoading("链接迁移")
   updateTo3ByWeb().then(() => MessageUtil.success("迁移完成"))
     .catch(e => MessageUtil.error("迁移失败", e))
-    .finally(() => useLoadingStore().close());
+    .finally(() => loading.close());
 }
 

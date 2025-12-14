@@ -1,11 +1,11 @@
 import {useIndexStore} from "@/store";
 import {Alert, Button, Form, FormItem, DialogPlugin, DialogInstance, Option, Select, Switch} from "tdesign-vue-next";
 import MessageUtil from "@/utils/model/MessageUtil";
-import useLoadingStore from "@/store/LoadingStore";
 import {useEsRequest} from "@/plugins/native/axios";
 import {useSeniorSearchStore} from "@/store/components/SeniorSearchStore";
 import AppLink from "@/components/AppLink/AppLink.vue";
 import {IndexItem} from "$/elasticsearch-client";
+import {useLoading} from "@/hooks/UseLoading";
 
 interface Config {
   index: string;
@@ -81,7 +81,7 @@ function onOk(index: string, config: Ref<Config>, modalReturn: DialogInstance) {
     MessageUtil.warning("请选择目标索引");
     return;
   }
-  useLoadingStore().start("开始进行索引迁移");
+  const loading = useLoading("开始进行索引迁移");
   useEsRequest({
     url: '_reindex' + (config.value.async ? '?wait_for_completion=false' : ''),
     method: 'POST',
@@ -92,7 +92,7 @@ function onOk(index: string, config: Ref<Config>, modalReturn: DialogInstance) {
   }).then(res => MessageUtil.success(res))
     .catch(e => MessageUtil.error("迁移失败", e))
     .finally(() => {
-      useLoadingStore().close();
+      loading.close();
       modalReturn.destroy();
     })
 }

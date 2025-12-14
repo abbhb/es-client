@@ -52,6 +52,7 @@ export default {
         top: "auto",
         header: title,
         draggable: true,
+        placement: "center",
         confirmBtn: {
           default: confirmButtonText
         },

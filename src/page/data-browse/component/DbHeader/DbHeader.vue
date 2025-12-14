@@ -90,7 +90,7 @@ function recordAdd() {
   if (!index) {
     return;
   }
-  execAdd(index, props.tab)
+  execAdd(props.tab)
     .then((data) => add(data))
     .catch((e) => MessageUtil.error("打开新增失败", e));
 }

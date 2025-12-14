@@ -70,11 +70,10 @@ export function dataBuild(mapping: IndexMapping): string {
 /**
  * 执行新增操作
  *
- * @param indexName 索引名称
  * @param instance 当前页面实例
  * @return 数据内容
  */
-export function execAdd(indexName: string, instance: UseDataBrowserInstance): Promise<string> {
+export function execAdd(instance: UseDataBrowserInstance): Promise<string> {
   const data = ref("{}");
   const { mappingMap } = useIndexStore();
   const { index } = instance;
@@ -87,7 +86,7 @@ export function execAdd(indexName: string, instance: UseDataBrowserInstance): Pr
 
   return new Promise((resolve) => {
     const modalReturn = DialogPlugin({
-      header: `在【${indexName}】中新增数据`,
+      header: `在【${index}】中新增数据`,
       width: "80vw",
       placement: "center",
       draggable: true,

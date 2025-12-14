@@ -12,6 +12,7 @@ import {
 import { useUmami } from "@/plugins/umami";
 import { formatJsonString } from '$/util'
 import {copyText} from "@/utils/BrowserUtil";
+import MessageBoxUtil from "@/utils/model/MessageBoxUtil";
 
 export function buildContextMenuClickEvent(
   instance: Ref<VxeTableInstance | null>,
@@ -42,7 +43,11 @@ export function buildContextMenuClickEvent(
         );
         break;
       case "operation-delete":
-        remove(row["_id"], row["_source"]);
+        MessageBoxUtil.alert("确定要删除吗？", "删除", {
+          confirmButtonText: "确定",
+        }).then(() => {
+          remove(row["_id"], row["_source"]);
+        })
         break;
       case "expand":
         if ($table) {

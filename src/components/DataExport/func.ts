@@ -1,15 +1,14 @@
 // 导出库
 import {Parser} from '@json2csv/plainjs';
 import {utils, writeFile} from 'xlsx'
-
 import {ApiType, ExportConfig, ExportMode, ExportScope, ExportSource, ExportType} from "./domain";
 import {DocumentSearchResult} from "@/domain/es/DocumentSearchResult";
 import {copyText, download} from "@/utils/BrowserUtil";
 import DocumentApi from "@/components/es/DocumentApi";
-import useLoadingStore from "@/store/LoadingStore";
 import MessageUtil from "@/utils/model/MessageUtil";
 import {DocumentSearchQuery} from "@/domain/es/DocumentSearchQuery";
 import {parseJsonWithBigIntSupport, stringifyJsonWithBigIntSupport} from "$/util";
+import {useLoading, UseLoadingResult} from "@/hooks/UseLoading";
 
 // ------------------------------------------------ 渲染库 ------------------------------------------------
 
@@ -64,7 +63,7 @@ export async function getExportData(config: ExportConfig): Promise<Array<Documen
   const size = config.size;
   let total = 0;
   const results = new Array<DocumentSearchResult>();
-
+  const instance = useLoading("正在导出数据");
   try {
     switch (config.scope) {
       case ExportScope.CURRENT:
@@ -81,11 +80,11 @@ export async function getExportData(config: ExportConfig): Promise<Array<Documen
             const result = await DocumentApi(config.index)._search(condition1).then(e => parseJsonWithBigIntSupport<DocumentSearchResult>(e));
             results.push(result);
             total = typeof result.hits.total === 'number' ? result.hits.total : result.hits.total.value;
-            useLoadingStore().start(`正在导出${(page - 1) * size} - ${page * size}，共${total}条`);
+            instance.start(`正在导出${(page - 1) * size} - ${page * size}，共${total}条`);
           } while (page * size < total);
         } else if (config.apiType === ApiType.SCROLL) {
           // 滚动导出
-          await useScrollApi(results, config);
+          await useScrollApi(results, config, instance);
         } else {
           throw new Error("导出异常，API类型不存在");
         }
@@ -98,18 +97,18 @@ export async function getExportData(config: ExportConfig): Promise<Array<Documen
           condition2.from = (page - 1) * size;
           condition2.size = size;
           const result = await DocumentApi(config.index)._search(condition2).then(e => parseJsonWithBigIntSupport<DocumentSearchResult>(e));
-          useLoadingStore().start(`正在导出${(page - 1) * size} - ${page * size}，共${total}条`);
+          instance.start(`正在导出${(page - 1) * size} - ${page * size}，共${total}条`);
           results.push(result);
         } while (page <= config.customEnd);
         break;
     }
   } finally {
-    useLoadingStore().close();
+    instance.close();
   }
   return Promise.resolve(results);
 }
 
-async function useScrollApi(results: Array<DocumentSearchResult>, config: ExportConfig) {
+async function useScrollApi(results: Array<DocumentSearchResult>, config: ExportConfig, instance: UseLoadingResult) {
   // 第一遍查询
   const condition: DocumentSearchQuery = {
     sort: config.search.sort,
@@ -127,7 +126,7 @@ async function useScrollApi(results: Array<DocumentSearchResult>, config: Export
     if (!result.hits.hits || result.hits.hits.length === 0) {
       break;
     }
-    useLoadingStore().start(`已经导出【${results.length * config.size}】条`);
+    instance.start(`已经导出【${results.length * config.size}】条`);
     results.push(result);
   }
 

@@ -1,5 +1,4 @@
 import MessageUtil from "@/utils/model/MessageUtil";
-import useLoadingStore from "@/store/LoadingStore";
 import {BrowserWindowType, createDataBrowserWindow} from "@/plugins/native/browser-window";
 import {Constant} from "@/global/Constant";
 import {formatJsonString, stringifyJsonWithBigIntSupport} from "$/util";
@@ -7,6 +6,7 @@ import {DialogInstance, DialogPlugin, TNode} from "tdesign-vue-next";
 import MonacoView from "@/components/view/MonacoView/index.vue";
 import {useUrlStore} from "@/store";
 import highlight from "highlight.js";
+import {useLoading} from "@/hooks/UseLoading";
 
 /**
  * 对话框参数
@@ -26,11 +26,11 @@ export function showJsonDialogByAsync(
   data: Promise<string>,
   options?: DialogOption
 ) {
-  useLoadingStore().start("开始获取数据，请稍后");
+  const loading = useLoading("开始获取数据，请稍后");
   data
     .then((json) => showJson(title, json, options))
     .catch((e) => MessageUtil.error("数据获取失败", e))
-    .finally(() => useLoadingStore().close());
+    .finally(() => loading.close());
 }
 
 /**
@@ -40,7 +40,7 @@ export function showJsonDialogByAsync(
  * @param options 操作人
  */
 export function showInstanceInfoDialog(title: string, url: string, options?: DialogOption) {
-  useLoadingStore().start("开始获取数据，请稍后");
+  const loading = useLoading("开始获取数据，请稍后");
   const {client} = useUrlStore();
   if (!client) {
     MessageUtil.error("请选择链接");
@@ -49,7 +49,7 @@ export function showInstanceInfoDialog(title: string, url: string, options?: Dia
   client.getText(url)
     .then((json) => showJson(title, json, options))
     .catch((e) => MessageUtil.error("数据获取失败", e))
-    .finally(() => useLoadingStore().close());
+    .finally(() => loading.close());
 }
 
 export function showJson(title: string, json: string, options?: DialogOption) {

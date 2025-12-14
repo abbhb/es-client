@@ -7,10 +7,8 @@
       <t-layout style="width: 100vw;height: calc(100vh - 41px);">
         <app-side/>
         <!-- 内容-->
-        <t-content class="relative">
-          <t-loading :loading="loading" :tip="text" class="relative w-full h-full">
-            <router-view/>
-          </t-loading>
+        <t-content class="relative h-full w-full">
+          <router-view/>
         </t-content>
       </t-layout>
     </t-content>
@@ -22,7 +20,6 @@
 <script lang="ts" setup>
 // 引入状态管理
 import {useGlobalSettingStore, useIndexStore, useUrlStore} from "@/store";
-import useLoadingStore from "@/store/LoadingStore";
 import {useColorMode} from "@/hooks";
 import useEditorSettingStore from "@/store/setting/EditorSettingStore";
 import PageNameEnum from "@/enumeration/PageNameEnum";
@@ -37,9 +34,6 @@ import IndexManage from '@/module/index-manage/index.vue';
 
 const router = useRouter();
 
-
-const loading = computed(() => useLoadingStore().loading);
-const text = computed(() => useLoadingStore().text);
 
 async function initData(): Promise<void> {
   await Promise.all([

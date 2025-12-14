@@ -10,12 +10,12 @@ import router from "@/plugins/router";
 import PageNameEnum from "@/enumeration/PageNameEnum";
 import {seniorSearchRecordService, useSeniorShowResultEvent} from "@/global/BeanFactory";
 import {useUrlStore} from "@/store";
-import useLoadingStore from "@/store/LoadingStore";
 import {useSeniorSearchHistoryStore} from "@/store/history/SeniorSearchHistoryStore";
 import {getFromOne, saveOneByAsync} from "@/utils/utools/DbStorageUtil";
 import LocalNameEnum from "@/enumeration/LocalNameEnum";
 import {formatJsonString, formatRestQuery, ParsedRequest, parseRestRequests} from "$/util";
 import {parseJsonWithBigIntSupport} from "$/util";
+import {useLoading} from "@/hooks/UseLoading";
 
 function requestBuild(instance: monaco.editor.IStandaloneCodeEditor, index: number): ParsedRequest | undefined {
   let value = instance.getValue();
@@ -188,13 +188,13 @@ export const useSeniorSearchStore = defineStore('senior-search', {
         `${event.method} ${event.link}` + (!event.body ? '' : ('\n' + event.body));
     },
     saveHistory() {
-      useLoadingStore().start("保存中");
+      const loading = useLoading("保存中");
       if (this.id > 0) {
         useSeniorSearchHistoryStore()
           .update(this.id, this.body)
           .then(() => MessageUtil.success("保存成功"))
           .catch(e => MessageUtil.error("保存失败", e))
-          .finally(() => useLoadingStore().close());
+          .finally(() => loading.close());
       } else {
         useSeniorSearchHistoryStore()
           .save(this.body)
@@ -203,16 +203,16 @@ export const useSeniorSearchStore = defineStore('senior-search', {
             MessageUtil.success("保存成功");
           })
           .catch(e => MessageUtil.error("保存失败", e))
-          .finally(() => useLoadingStore().close());
+          .finally(() => loading.close());
       }
     },
     loadHistory(id: number) {
       this.id = id;
-      useLoadingStore().start("获取历史记录中");
+      const loading = useLoading("获取历史记录中");
       useSeniorSearchHistoryStore().getInfo(this.id)
         .then(body => this.body = body)
         .catch(e => MessageUtil.error("获取详情失败", e))
-        .finally(() => useLoadingStore().close());
+        .finally(() => loading.close());
     },
     clearHistory() {
       this.id = 0;

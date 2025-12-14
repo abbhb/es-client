@@ -17,7 +17,7 @@
         </template>
       </t-select>
       <!-- 刷新按钮 -->
-      <t-button theme="primary" class="refresh" @click="refresh()" :disabled="loading || !urlId || urlId === ''">刷新
+      <t-button theme="primary" class="refresh" @click="refresh()" :disabled="!urlId || urlId === ''">刷新
       </t-button>
       <t-progress v-if="total_shards > 0" :percentage="Math.round(active_shards / total_shards * 100)"
                   :status="status" class="mt-9px w-220px ml-14px">
@@ -31,7 +31,7 @@
       <!-- 系统通知 -->
       <SystemNotify/>
       <!-- 各种信息弹框 -->
-      <app-info class-name="menu-item" :disabled="loading"/>
+      <app-info class-name="menu-item" />
       <!-- 主题切换 -->
       <t-dropdown trigger="click">
         <t-button shape="square" variant="text" theme="primary">
@@ -64,7 +64,7 @@
       </t-dropdown>
       <!-- 版本 -->
       <t-dropdown @select="versionCommand" placement="bottom-right" trigger="click">
-        <t-button class="menu-item" variant="text" theme="primary" :disabled="loading" style="padding: 0 7px;">
+        <t-button class="menu-item" variant="text" theme="primary" style="padding: 0 7px;">
           {{ Constant.version }}
         </t-button>
         <t-dropdown-menu>
@@ -100,16 +100,11 @@
 <script lang="ts" setup>
 import {useRouter} from 'vue-router';
 import {Constant} from '@/global/Constant';
-// 枚举
 import PageNameEnum from "@/enumeration/PageNameEnum";
 import LocalNameEnum from '@/enumeration/LocalNameEnum';
-// 组件
 import AppInfo from './app-info.vue';
-// 引入状态管理
 import {useIndexStore, useUrlStore} from "@/store";
-import useLoadingStore from "@/store/LoadingStore";
 import {useColorMode} from "@/hooks";
-// 工具类
 import Assert from "@/utils/Assert";
 import {setItem} from '@/utils/utools/DbStorageUtil';
 import {openAddLink} from "@/page/setting/pages/link/components/EditLink";
@@ -131,7 +126,6 @@ const size = useWindowSize();
 const urlId = ref<number | string | undefined>(useUrlStore().id);
 
 const urls = computed(() => useUrlStore().urls);
-const loading = computed(() => useLoadingStore().loading);
 const {colorMode} = useColorMode();
 const mode = computed(() => colorMode.value);
 const name = computed(() => useIndexStore().name);
