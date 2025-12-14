@@ -4,7 +4,7 @@ import { UseDataBrowserInstance } from "@/hooks";
 import { useIndexStore } from "@/store";
 import MessageUtil from "@/utils/model/MessageUtil";
 import { IndexMapping } from "$/shared/elasticsearch";
-import { stringifyJsonWithBigIntSupport } from "$/util";
+import {formatJsonString, stringifyJsonWithBigIntSupport} from "$/util";
 
 export function dataBuild(mapping: IndexMapping): string {
   const buildDefaultValue = (prop: any): any => {
@@ -79,7 +79,7 @@ export function execAdd(instance: UseDataBrowserInstance): Promise<string> {
   const { index } = instance;
   const mapping = mappingMap.get(index);
   if (mapping) {
-    data.value = dataBuild(mapping);
+    data.value = formatJsonString(dataBuild(mapping));
   } else {
     MessageUtil.warning("获取mapping失败，无法初始化对象");
   }
