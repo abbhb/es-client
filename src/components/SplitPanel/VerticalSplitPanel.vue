@@ -20,7 +20,7 @@
 <script setup lang="ts">
 const model = defineModel<number>({ default: 0 })
 const props = defineProps<{ dividerHeight?: number }>()
-const dividerH = computed(() => props.dividerHeight ?? 6)
+const dividerH = computed(() => props.dividerHeight ?? 8)
 const containerRef = ref<HTMLElement | null>(null)
 const isHover = ref(false)
 const isDragging = ref(false)

@@ -1,5 +1,5 @@
 <template>
-  <div class="abs-4 material-card overflow-hidden">
+  <div class="abs-8 !left-0 material-card overflow-hidden">
     <!-- 空状态 -->
     <empty-result
       v-if="activeIds.length === 0"
