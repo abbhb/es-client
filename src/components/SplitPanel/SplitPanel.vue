@@ -1,5 +1,5 @@
 <template>
-  <div ref="containerRef" class="flex h-full select-none">
+  <div ref="containerRef" class="flex h-full">
     <div class="h-full overflow-auto relative" :style="{ width: leftPx }">
       <slot name="left" />
     </div>

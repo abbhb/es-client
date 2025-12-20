@@ -1,5 +1,5 @@
 <template>
-  <div ref="containerRef" class="flex flex-col h-full select-none">
+  <div ref="containerRef" class="flex flex-col h-full">
     <div class="w-full overflow-auto relative" :style="{ height: topPercent }">
       <slot name="top" />
     </div>
