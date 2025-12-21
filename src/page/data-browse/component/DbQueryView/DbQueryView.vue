@@ -18,19 +18,19 @@
             </t-button>
           </div>
           <div class="flex">
-            <t-button theme="primary" variant="text" size="small" shape="square">
+            <t-button theme="primary" variant="text" size="small" shape="square" @click="onPrint(instance)">
               <template #icon>
                 <print-icon/>
               </template>
             </t-button>
-            <t-button theme="primary" variant="text" size="small" shape="square">
+            <t-button theme="primary" variant="text" size="small" shape="square" @click="onShowSearch(instance)">
               <template #icon>
                 <search-icon/>
               </template>
             </t-button>
           </div>
         </div>
-        <DbQueryTable :columns="instance.columns.value" :records="instance.records.value" :height/>
+        <DbQueryTable :columns="instance.columns.value" :records="instance.records.value" :height :tab="instance"/>
       </div>
     </div>
   </div>
@@ -41,6 +41,9 @@ import {SelectOption} from "$/shared/common";
 import DbQueryTable from "@/page/data-browse/component/DbQueryView/DbQueryTable.vue";
 import DbPageHelp from "@/page/data-browse/component/DbPageHelp/DbPageHelp.vue";
 import {PrintIcon, RefreshIcon, SearchIcon} from "tdesign-icons-vue-next";
+import {formatJsonString, stringifyJsonWithBigIntSupport} from "$/util";
+import {showJson} from "@/utils/model/DialogUtil";
+import {showDataExportDrawer} from "@/components/DataExport";
 
 const props = defineProps({
   instances: {
@@ -78,6 +81,19 @@ const onRemove = (tab: SelectOption) => {
   }
   current.value = tabs.value[index].value;
 }
+
+
+const onShowSearch = (tab: UseDataBrowserQueryInstance) => {
+  showJson("查询条件", formatJsonString(stringifyJsonWithBigIntSupport(tab.dsl)));
+};
+
+const onPrint = (tab: UseDataBrowserQueryInstance) => {
+  showDataExportDrawer({
+    name: tab.index,
+    index: tab.index,
+    search: tab.dsl,
+  });
+};
 </script>
 <style scoped lang="less">
 .db-query-view-content {

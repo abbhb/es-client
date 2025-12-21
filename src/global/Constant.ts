@@ -41,7 +41,8 @@ export const Constant = {
   doc: {
     index: 'https://es-client.esion.xyz/help/docs/list',
     dataBrowse: 'https://es-client.esion.xyz/help/docs/info/e2d96cbb-cff3-4925-8cd8-e1df06dba44b',
-    rest: 'https://es-client.esion.xyz/help/docs/info/f7e47ff8-a907-4aa8-9b0d-0320b4d04189'
+    rest: 'https://es-client.esion.xyz/help/docs/info/f7e47ff8-a907-4aa8-9b0d-0320b4d04189',
+    dataBrowserSql: 'https://es-client.esion.xyz/help/docs/info/b84e8071-479a-40db-aea4-8ffa827920b4'
   },
   mbd: {
     // 年费，常规
@@ -55,11 +56,11 @@ export const metaColumn = (): Array<TableColumn> => ([{
   field: '_type',
   title: '_type',
   width: 120
-},{
+}, {
   field: '_score',
   title: '_score',
   width: 120
-},{
+}, {
   field: '_index',
   title: '_index',
   width: 120

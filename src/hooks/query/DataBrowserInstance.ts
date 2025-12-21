@@ -1,15 +1,15 @@
-import type {Ref} from "vue";
-import {useSnowflake} from "$/util"
-import {useGlobalSettingStore, useUrlStore} from "@/store";
+import type { Ref } from "vue";
+import { useSnowflake } from "$/util";
+import { useGlobalSettingStore, useUrlStore } from "@/store";
 import MessageUtil from "@/utils/model/MessageUtil";
-import {conditionBuild, orderBuild} from "@/utils/convert/data-browser-condition";
+import { conditionBuild, orderBuild } from "@/utils/convert/data-browser-condition";
 import {
   buildDataBrowserData,
   buildDataBrowserOrder,
   buildDataBrowserQuery
 } from "$/elasticsearch-client/components/DataBrowserQuery";
-import {DataSearchColumnConfig} from "$/elasticsearch-client";
-import {BaseBrowserBaseType} from "@/store/components/DataBrowseStore";
+import { DataSearchColumnConfig, DataSourceRecord } from "$/elasticsearch-client";
+import { BaseBrowserBaseType } from "@/store/components/DataBrowseStore";
 import {metaColumn} from "@/global/Constant";
 
 export interface UseDataBrowserInstance {
@@ -32,8 +32,8 @@ export interface UseDataBrowserInstance {
   run: (renderColumn?: boolean) => void;
 
   add: (data: string) => void;
-  update: (id: string, data: string, old: string) => void;
-  remove: (id: string, old: string) => void;
+  update: (record: DataSourceRecord, data: string) => void;
+  remove: (record: DataSourceRecord) => void;
   clear: () => void;
 
   // 构建查询条件，JSON字符串
@@ -44,7 +44,10 @@ export interface UseDataBrowserInstance {
   buildSearch: () => Record<string, any>;
 }
 
-export const useDataBrowserInstance = (index: string, type: BaseBrowserBaseType): UseDataBrowserInstance => {
+export const useDataBrowserInstance = (
+  index: string,
+  type: BaseBrowserBaseType
+): UseDataBrowserInstance => {
   // 唯一ID
   const id = useSnowflake().nextId();
   // 当前查询的索引
@@ -120,12 +123,17 @@ export const useDataBrowserInstance = (index: string, type: BaseBrowserBaseType)
       });
   };
 
-  const update = (docId: string, data: string) => {
-    const {client} = useUrlStore();
+  const update = (record: DataSourceRecord, data: string) => {
+    const { client } = useUrlStore();
     if (!client) return MessageUtil.warning("请选择链接");
     if (loading.value) return;
     loading.value = true;
-    client.updateDoc(index, docId, data)
+    client.updateDoc(
+      record["_index"],
+      record["_id"],
+      data,
+      record["_type"]
+    )
       .then(() => {
         MessageUtil.success("修改成功");
         // 延迟1m
@@ -136,12 +144,16 @@ export const useDataBrowserInstance = (index: string, type: BaseBrowserBaseType)
       });
   };
 
-  const remove = (docId: string) => {
-    const {client} = useUrlStore();
+  const remove = (record: DataSourceRecord) => {
+    const { client } = useUrlStore();
     if (!client) return MessageUtil.warning("请选择链接");
     if (loading.value) return;
     (() => {
-      return client.deleteDoc(index, docId);
+      return client.deleteDoc(
+        record["_index"],
+        record["_id"],
+        record["_type"]
+      );
     })()
       .then(() => {
         MessageUtil.success("删除成功");
@@ -172,8 +184,8 @@ export const useDataBrowserInstance = (index: string, type: BaseBrowserBaseType)
     });
   };
   const buildSearch = () => {
-    const {trackTotalHitsMode, trackTotalHitsValue} = useGlobalSettingStore();
-    const {versionFirst} = useUrlStore();
+    const { trackTotalHitsMode, trackTotalHitsValue } = useGlobalSettingStore();
+    const { versionFirst } = useUrlStore();
     return buildDataBrowserData(
       {
         index,

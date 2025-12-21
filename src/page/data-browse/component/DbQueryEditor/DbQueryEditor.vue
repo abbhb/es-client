@@ -19,7 +19,7 @@
         </t-select>
       </t-space>
       <t-space>
-        <t-button theme="primary" variant="text" shape="square" size="small">
+        <t-button theme="primary" variant="text" shape="square" size="small" @click="openDbSqlHelp()">
           <template #icon>
             <help-circle-icon/>
           </template>
@@ -36,6 +36,7 @@ import {HelpCircleIcon, HistoryIcon, PlayIcon} from "tdesign-icons-vue-next";
 import {UseDataBrowserQueryContent} from "@/hooks";
 import SqlEditor from "@/components/SqlEditor/SqlEditor.vue";
 import {SqlEditorFunc} from "@/components/SqlEditor";
+import {openDbSqlHelp} from "@/page/data-browse/component/DbQueryEditor/DbSqlHelp";
 
 const props = defineProps({
   tab: {

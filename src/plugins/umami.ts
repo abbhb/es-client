@@ -65,7 +65,7 @@ function sendEvent(payload: Record<string, any>) {
     })
   })
     .then((response) => response.text())
-    .then((text) => console.log("Umami response:", text))
+    .then((text) => console.debug("Umami response:", text))
     .catch((error) => console.error("Umami error:", error));
 }
 

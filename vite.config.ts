@@ -56,7 +56,11 @@ export default defineConfig(({mode}) => {
     server: {
       port: 7743,
       proxy: {
-        '/es': "http://10.20.30.2:9200"
+        '/es': {
+          target: 'http://localhost:9200',
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/es/, '')
+        }
       }
     },
     // 强制预构建插件包
@@ -67,6 +71,9 @@ export default defineConfig(({mode}) => {
         `monaco-editor/esm/vs/editor/editor.worker`
       ],
     },
-    envDir: 'env'
+    envDir: 'env',
+    define: {
+      __INTLIFY_JIT_COMPILATION__: JSON.stringify(true)
+    }
   }
 })

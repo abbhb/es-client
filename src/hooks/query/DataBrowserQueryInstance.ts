@@ -1,16 +1,19 @@
-import {TableColumn} from "$/shared/common/TableColumn";
-import {searchResultToTable} from "@/core/elasticsearch-client/components/SearchResultToTable";
-import {stringifyJsonWithBigIntSupport} from "$/util";
-import {conditionToES, ExprFunctionCall, parseSQL, Query} from "@/core/util/file/SqlParser";
-import {useGlobalSettingStore, useUrlStore} from "@/store";
-import type {Ref} from "vue";
+import { TableColumn } from "$/shared/common/TableColumn";
+import { searchResultToTable } from "$/elasticsearch-client/components/SearchResultToTable";
+import { stringifyJsonWithBigIntSupport } from "$/util";
+import { conditionToES, ExprFunctionCall, parseSQL, Query } from "$/util/file/SqlParser";
+import { useGlobalSettingStore, useUrlStore } from "@/store";
+import type { Ref } from "vue";
 import MessageUtil from "@/utils/model/MessageUtil";
 import dayjs from "dayjs";
+import {DataSourceRecord} from "@/domain/core";
 
 export interface UseDataBrowserQueryInstance {
   id: string;
   // 查询内容
   sql: string;
+  index: string;
+  dsl: Record<string, any>;
 
   // ---------------------------------------- 结果相关 ----------------------------------------
   loading: Ref<boolean>;
@@ -28,39 +31,40 @@ export interface UseDataBrowserQueryInstance {
    * 刷新数据
    */
   refresh(): Promise<void>;
-
+  update: (record: DataSourceRecord, data: string) => void;
+  remove: (record: DataSourceRecord) => void;
 }
 
 function renderFunctionForConcat(expr: ExprFunctionCall, record: Record<string, any>): string {
-  let val = '';
-  expr.args.forEach(arg => {
-    if (arg.type === 'Identifier') {
+  let val = "";
+  expr.args.forEach((arg) => {
+    if (arg.type === "Identifier") {
       val += record[arg.name];
-    } else if (arg.type === 'StringLiteral') {
+    } else if (arg.type === "StringLiteral") {
       val += arg.value;
-    } else if (arg.type === 'NumberLiteral') {
+    } else if (arg.type === "NumberLiteral") {
       val += arg.value.toString();
-    } else if (arg.type === 'FunctionCall') {
+    } else if (arg.type === "FunctionCall") {
       val += renderFunctionForConcat(arg, record);
     }
-  })
+  });
   return val;
 }
 
 function renderFunctionForDataFormat(expr: ExprFunctionCall, record: Record<string, any>): string {
-  let date = '';
+  let date = "";
   const [field, format] = expr.args;
-  if (field.type === 'Identifier') {
+  if (field.type === "Identifier") {
     date = record[field.name];
-  } else if (field.type === 'StringLiteral') {
+  } else if (field.type === "StringLiteral") {
     date = field.value;
-  } else if (field.type === 'NumberLiteral') {
+  } else if (field.type === "NumberLiteral") {
     date = field.value.toString();
-  } else if (field.type === 'FunctionCall') {
+  } else if (field.type === "FunctionCall") {
     date = renderFunctionForConcat(field, record);
   }
-  let f = 'YYYY-MM-DD HH:mm:ss';
-  if (format && format.type === 'StringLiteral') {
+  let f = "YYYY-MM-DD HH:mm:ss";
+  if (format && format.type === "StringLiteral") {
     f = format.value;
   }
   return dayjs(date).format(f);
@@ -79,7 +83,6 @@ function renderFunctionCall(expr: ExprFunctionCall, record: Record<string, any>)
 }
 
 export function useDataBrowserQueryInstance(sql: string, id: string): UseDataBrowserQueryInstance {
-
   let parse = true;
   const loading = ref(false);
   // 显示的列
@@ -95,6 +98,7 @@ export function useDataBrowserQueryInstance(sql: string, id: string): UseDataBro
 
   const dsl: Record<string, any> = {};
   let query: Query | null = null;
+  let index = "";
 
   try {
     // 第一步解析查询
@@ -108,13 +112,13 @@ export function useDataBrowserQueryInstance(sql: string, id: string): UseDataBro
         bool: {
           must: [],
           must_not: [],
-          should: [],
-        },
+          should: []
+        }
       };
     }
     // 第三步，处理track_total_hits
-    const {versionFirst} = useUrlStore();
-    const {trackTotalHitsMode, trackTotalHitsValue} = useGlobalSettingStore();
+    const { versionFirst } = useUrlStore();
+    const { trackTotalHitsMode, trackTotalHitsValue } = useGlobalSettingStore();
     if (versionFirst >= 7) {
       if (trackTotalHitsMode === "custom") {
         dsl.track_total_hits = trackTotalHitsValue;
@@ -124,19 +128,20 @@ export function useDataBrowserQueryInstance(sql: string, id: string): UseDataBro
     }
     // 第四步处理排序
     if (query.orderBy) {
-      dsl.sort = query.orderBy.map(item => {
+      dsl.sort = query.orderBy.map((item) => {
         return {
           [item.field]: {
-            order: item.direction,
+            order: item.direction
           }
-        }
-      })
+        };
+      });
     }
     // 第五步，解析limit和offset
-    if (typeof query.limit === 'number') limit.value = query.limit;
-    if (typeof query.offset === 'number') offset.value = query.offset;
+    if (typeof query.limit === "number") limit.value = query.limit;
+    if (typeof query.offset === "number") offset.value = query.offset;
+    index = query.from;
   } catch (e) {
-    MessageUtil.error(`解析「${sql}」失败`, e)
+    MessageUtil.error(`解析「${sql}」失败`, e);
     parse = false;
   }
 
@@ -155,69 +160,60 @@ export function useDataBrowserQueryInstance(sql: string, id: string): UseDataBro
         method: 'POST',
         url: `${query.from}/_search`,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json"
         },
-        body: stringifyJsonWithBigIntSupport(dsl),
+        body: stringifyJsonWithBigIntSupport(dsl)
       });
       // 查询成功，处理结果
       const table = searchResultToTable(res);
       total.value = table.total;
       const r = table.records;
-      const c: Array<TableColumn> = [{
-        field: "_id",
-        title: "_id",
-        width: 240,
-        ellipsis: true,
-        cellClass: "",
-        show: true,
-        sortable: {
-          sortDirections: ["ascend", "descend"] as ("ascend" | "descend")[]
-        }
-      }];
+      const c: Array<TableColumn> = [];
       // 表头需要特殊处理，因为sql中的字段存在别名等情况
-      if (query.select.length === 1 && query.select[0].expr.type === 'Star') {
+      if (query.select.length === 1 && query.select[0].expr.type === "Star") {
         // 如果查询的是*，则直接处理
         c.push(...table.columns);
       } else {
         // 需要遍历select，去寻找别名，并且还要支持方法
-        query.select.forEach(item => {
-          const {expr, alias} = item;
+        query.select.forEach((item) => {
+          const { expr, alias } = item;
           switch (expr.type) {
             case "Star":
             case "QualifiedStar":
-              table.columns.forEach(e => c.push(e));
+              table.columns.forEach((e) => c.push(e));
               break;
             case "Identifier":
               c.push({
                 title: alias || expr.name,
-                field: expr.name,
-              })
+                field: expr.name
+              });
               break;
             case "StringLiteral":
             case "NumberLiteral":
               c.push({
                 title: alias || expr.value.toString(),
-                field: expr.value.toString(),
-              })
+                field: expr.value.toString()
+              });
               break;
-            case "FunctionCall":
+            case "FunctionCall": {
               // 最麻烦的方法调用，要适配多种方法，但是方法调用之会导致结果发生变化。
               const k = alias || expr.name;
               c.push({
                 title: k,
-                field: k,
-              })
+                field: k
+              });
               r.forEach((e, i) => {
                 e[k] = renderFunctionCall(expr, table.records[i]);
               });
               break;
+            }
           }
         });
       }
       columns.value = c;
       records.value = r;
     } catch (e) {
-      MessageUtil.error(`运行「${sql}」失败`, e)
+      MessageUtil.error(`运行「${sql}」失败`, e);
     } finally {
       loading.value = false;
     }
@@ -225,22 +221,67 @@ export function useDataBrowserQueryInstance(sql: string, id: string): UseDataBro
 
   if (parse) {
     // 第一次运行
-    refresh().then(() => console.debug("运行成功")).catch(e => MessageUtil.error(`运行「${sql}」失败`, e));
+    refresh()
+      .then(() => console.debug("运行成功"))
+      .catch((e) => MessageUtil.error(`运行「${sql}」失败`, e));
   }
 
   watch([limit, offset], refresh);
 
+  const update = (record: DataSourceRecord, data: string) => {
+    const { client } = useUrlStore();
+    if (!client) return MessageUtil.warning("请选择链接");
+    if (loading.value) return;
+    loading.value = true;
+    client.updateDoc(
+      record["_index"],
+      record["_id"],
+      data,
+      record["_type"]
+    )
+      .then(() => {
+        MessageUtil.success("修改成功");
+        // 延迟1m
+        setTimeout(() => refresh(), 1000);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  };
+
+  const remove = (record: DataSourceRecord) => {
+    const { client } = useUrlStore();
+    if (!client) return MessageUtil.warning("请选择链接");
+    if (loading.value) return;
+    (() => {
+      return client.deleteDoc(
+        record["_index"],
+        record["_id"],
+        record["_type"]
+      );
+    })()
+      .then(() => {
+        MessageUtil.success("删除成功");
+        refresh();
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  };
+
   return {
     id,
     sql,
+    index,
+    dsl,
     loading,
     columns,
     records,
     total,
     offset,
     limit,
-    refresh
+    refresh,
+    update,
+    remove
   };
-
-
 }
