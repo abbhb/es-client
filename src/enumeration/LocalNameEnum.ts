@@ -24,6 +24,8 @@ enum LocalNameEnum {
 
   KEY_DEV_TOOL_EXPENDED = '/key/dev-tool/expended',
 
+  KEY_CHAT_SIZE = "/key/chat/size",
+
   KEY_COLLAPSED = '/key/collapsed',
 
   KEY_LOCAL = '/key/local',
