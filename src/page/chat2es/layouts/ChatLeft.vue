@@ -16,7 +16,6 @@
       </div>
     </div>
     <div class="flex-1">
-      内容
     </div>
     <div>
       <chat-left-input />
