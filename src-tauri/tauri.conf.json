@@ -36,7 +36,7 @@
       "icons/icon.ico"
     ],
     "createUpdaterArtifacts": true,
-    "publisher": "落雨不悔"
+    "publisher": "esion"
   },
   "plugins": {
     "updater": {
