@@ -23,9 +23,7 @@ import {exportData} from "@/components/DataExport/func";
 import MessageUtil from "@/utils/model/MessageUtil";
 import AppLink from "@/components/AppLink/AppLink.vue";
 import {useLoading} from "@/hooks/UseLoading";
-import i18n from "@/i18n";
-
-const t = (key: string) => i18n.global.t(key);
+import { t } from '@/i18n';
 
 const allowExportTypes: Array<ExportType> = [ExportType.JSON];
 

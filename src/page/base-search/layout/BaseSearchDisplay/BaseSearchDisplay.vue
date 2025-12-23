@@ -29,9 +29,7 @@
 import FieldOrderContainer from "@/page/base-search/components/filed-order/container.vue";
 import FieldConditionContainer from "@/page/base-search/components/field-condition/container.vue";
 import { BaseSearchInstanceResult } from "@/hooks";
-import i18n from "@/i18n";
-
-const t = (key: string) => i18n.global.t(key);
+import { t } from '@/i18n';
 
 const props = defineProps({
   tab: {

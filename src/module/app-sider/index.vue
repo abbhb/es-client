@@ -26,6 +26,12 @@
         </template>
         {{ $t('menu.dev_tools') }}
       </t-menu-item>
+      <t-menu-item :value="PageNameEnum.CHAT2ES">
+        <template #icon>
+          <chat-bubble-icon />
+        </template>
+        {{ $t('menu.chat') }}
+      </t-menu-item>
       <t-submenu :value="PageNameEnum.DASHBOARD">
         <template #icon>
           <dashboard-icon/>
@@ -94,6 +100,7 @@
 import PageNameEnum from "@/enumeration/PageNameEnum";
 import LocalNameEnum from "@/enumeration/LocalNameEnum";
 import {
+  ChatBubbleIcon,
   CodeIcon,
   DashboardIcon,
   EllipsisIcon,

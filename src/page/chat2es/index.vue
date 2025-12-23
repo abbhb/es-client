@@ -12,8 +12,8 @@
 </template>
 <script lang="ts" setup>
 import LocalNameEnum from "@/enumeration/LocalNameEnum";
-import ChatLeft from "@/page/chat/layouts/ChatLeft.vue";
-import ChatRight from "@/page/chat/layouts/ChatRight.vue";
+import ChatLeft from "@/page/chat2es/layouts/ChatLeft.vue";
+import ChatRight from "@/page/chat2es/layouts/ChatRight.vue";
 
 const size = useSessionStorage(LocalNameEnum.KEY_CHAT_SIZE, 400);
 </script>

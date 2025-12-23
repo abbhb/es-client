@@ -58,9 +58,7 @@ import MessageBoxUtil from "@/utils/model/MessageBoxUtil";
 import MonacoEditor from "@/components/monaco-editor/index.vue";
 import {formatJsonString, stringifyJsonWithBigIntSupport} from "$/util";
 import { ChevronUpIcon } from "tdesign-icons-vue-next";
-import i18n from '@/i18n';
-
-const t = (key: string) => i18n.global.t(key);
+import { t } from '@/i18n';
 
 export default defineComponent({
   name: 'index-manage',

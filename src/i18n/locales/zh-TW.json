@@ -1,0 +1,57 @@
+{
+  "action": {
+    "about": "關於",
+    "add": "新增",
+    "add_link": "新增鏈接",
+    "cancel": "取消",
+    "changelog": "更新日誌",
+    "check_update": "檢查更新",
+    "confirm": "確認",
+    "delete": "刪除",
+    "feedback": "問題反饋",
+    "query": "查詢",
+    "refresh": "刷新",
+    "repository": "代碼倉庫",
+    "save": "保存",
+    "update": "更新"
+  },
+  "error": {
+    "link_not_found": "鏈接未找到"
+  },
+  "menu": {
+    "base_search": "基礎搜索",
+    "chat": "chat2es",
+    "dashboard": "儀表盤",
+    "dashboard_analysis": "分析",
+    "dashboard_cat": "_cat",
+    "dashboard_info": "信息",
+    "dashboard_node": "節點",
+    "dashboard_shards": "副本與分片",
+    "data_browser": "數據瀏覽",
+    "dev_tools": "開發者工具",
+    "home": "概覽",
+    "more": "更多",
+    "more_about": "關於",
+    "more_changelog": "更新日誌",
+    "more_privacy": "隱私協議",
+    "senior_search": "高級搜索",
+    "setting": "設置",
+    "setting_global": "全局設置",
+    "setting_link": "鏈接管理"
+  },
+  "placeholder": {
+    "select_link": "請選擇鏈接"
+  },
+  "response": {
+    "operate": "{action}{result}"
+  },
+  "result": {
+    "failed": "失敗",
+    "success": "成功"
+  },
+  "theme": {
+    "auto": "跟隨系統",
+    "dark": "黑夜",
+    "light": "日間"
+  }
+}

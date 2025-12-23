@@ -9,9 +9,7 @@ import MessageUtil from "@/utils/model/MessageUtil";
 import {DocumentSearchQuery} from "@/domain/es/DocumentSearchQuery";
 import {parseJsonWithBigIntSupport, stringifyJsonWithBigIntSupport} from "$/util";
 import {useLoading, UseLoadingResult} from "@/hooks/UseLoading";
-import i18n from "@/i18n";
-
-const t = (key: string, named?: Record<string, unknown>) => i18n.global.t(key, named || {});
+import { t } from '@/i18n';
 
 // ------------------------------------------------ 渲染库 ------------------------------------------------
 

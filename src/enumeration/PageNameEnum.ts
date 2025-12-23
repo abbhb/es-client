@@ -10,6 +10,8 @@ enum PageNameEnum {
 
     DEV_TOOL = "/dev-tool",
 
+    CHAT2ES = "/chat2es",
+
     TOOL = "/tool",
 
     TOOL_WATCH = "/tool/watch",

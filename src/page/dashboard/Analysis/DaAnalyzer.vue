@@ -31,9 +31,7 @@ import {Token} from "$/elasticsearch-client/domain/Analyze";
 import MessageUtil from "@/utils/model/MessageUtil";
 import {showJson} from "@/utils/model/DialogUtil";
 import {stringifyJsonWithBigIntSupport} from "$/util";
-import i18n from "@/i18n";
-
-const t = (key: string) => i18n.global.t(key);
+import { t } from '@/i18n';
 
 const config = ref({
   index: "",

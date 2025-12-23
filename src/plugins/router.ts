@@ -30,6 +30,10 @@ const router = createRouter({
     path: '/dev-tool',
     component: () => import('@/page/dev-tool/index.vue')
   }, {
+    name: 'chat2es',
+    path: '/chat2es',
+    component: () => import('@/page/chat2es/index.vue')
+  }, {
     name: '仪表盘',
     path: PageNameEnum.DASHBOARD,
     component: () => import('@/page/dashboard/index.vue'),
