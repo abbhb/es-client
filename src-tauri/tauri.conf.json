@@ -36,7 +36,11 @@
       "icons/icon.ico"
     ],
     "createUpdaterArtifacts": true,
-    "publisher": "esion"
+    "publisher": "esion",
+    "macOS": {
+      "entitlements": "./Entitlements.plist"
+    },
+    "category": "DeveloperTool"
   },
   "plugins": {
     "updater": {
