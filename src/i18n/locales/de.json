@@ -175,7 +175,12 @@
       "empty": "Leer",
       "ignore": "Ignorieren",
       "open": "Öffnen",
-      "placeholder": "Indexnamen eingeben"
+      "placeholder": "Indexnamen eingeben",
+      "batch_delete": "Stapel löschen",
+      "batch_delete_confirm": "Dieser Vorgang löscht {count} ausgewählte Indizes dauerhaft. Fortfahren?",
+      "batch_delete_success": "Stapel löschen erfolgreich",
+      "batch_select": "Mehrfachauswahl",
+      "cancel_batch": "Auswahl aufheben"
     },
     "index_reindex": {
       "async": "Asynchron",

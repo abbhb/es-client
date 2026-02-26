@@ -175,7 +175,12 @@
       "empty": "空",
       "ignore": "無視",
       "open": "開く",
-      "placeholder": "インデックス名を入力"
+      "placeholder": "インデックス名を入力",
+      "batch_delete": "一括削除",
+      "batch_delete_confirm": "選択した {count} 件のインデックスを完全に削除します。続けますか？",
+      "batch_delete_success": "一括削除成功",
+      "batch_select": "複数選択",
+      "cancel_batch": "選択解除"
     },
     "index_reindex": {
       "async": "非同期",

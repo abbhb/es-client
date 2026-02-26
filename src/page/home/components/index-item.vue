@@ -1,5 +1,7 @@
 <template>
-  <div class="home-index-card material-card" :class="{close: closed}">
+  <div class="home-index-card material-card" :class="{close: closed, 'batch-selected': selected && batchMode}">
+    <!-- 批量选择复选框 -->
+    <t-checkbox v-if="batchMode" class="batch-checkbox" :checked="selected" @change="$emit('toggleSelect')"/>
     <!-- 标题 -->
     <div class="title items-center" :style="{maxWidth: maxWidth}">
       <t-link :theme="closed ? 'default' : 'primary'" size="large" @click="indexInfo()" class="!font-bold"
@@ -95,8 +97,17 @@ export default defineComponent({
     index: {
       type: Object as PropType<IndexItem>,
       required: true,
-    }
+    },
+    batchMode: {
+      type: Boolean,
+      default: false,
+    },
+    selected: {
+      type: Boolean,
+      default: false,
+    },
   },
+  emits: ['toggleSelect'],
   data: () => ({
     state: false,
     open: true,
@@ -246,6 +257,16 @@ export default defineComponent({
 
   &.close {
     border-color: var(--td-text-color-placeholder);
+  }
+
+  &.batch-selected {
+    background-color: var(--td-brand-color-light);
+  }
+
+  .batch-checkbox {
+    position: absolute;
+    top: 10px;
+    left: 10px;
   }
 
   .title {
