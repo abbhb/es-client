@@ -36,7 +36,9 @@ export const useHomeStore = createGlobalState(
     const keyword = ref('');
     const order = ref<OrderType>(1);
     const status = ref<Status>(Status.NONE)
+    const selectedIndices = ref<string[]>([])
+    const batchMode = ref(false)
 
-    return {keyword, order, status}
+    return {keyword, order, status, selectedIndices, batchMode}
   }
 )

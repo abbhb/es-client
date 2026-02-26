@@ -175,7 +175,12 @@
       "empty": "Empty",
       "ignore": "Ignore",
       "open": "Open",
-      "placeholder": "Input index name"
+      "placeholder": "Input index name",
+      "batch_delete": "Batch Delete",
+      "batch_delete_confirm": "This operation will permanently delete {count} selected indices. Continue?",
+      "batch_delete_success": "Batch delete success",
+      "batch_select": "Batch Select",
+      "cancel_batch": "Cancel Select"
     },
     "index_reindex": {
       "async": "Async",

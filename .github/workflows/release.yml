@@ -8,12 +8,79 @@ on:
       - 'v*'
 
 jobs:
+  build_extensions:
+    name: 构建浏览器扩展
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'pnpm'
+
+      - name: build chrome extension
+        run: pnpm build:chrome
+
+      - name: package chrome extension
+        run: |
+          cd src-chrome
+          zip -r ../es-client-chrome.zip .
+          cd ..
+
+      - name: build edge extension
+        run: pnpm build:edge
+
+      - name: package edge extension
+        run: |
+          cd src-edge
+          zip -r ../es-client-edge.zip .
+          cd ..
+
+      - name: build firefox extension
+        run: pnpm build:firefox
+
+      - name: package firefox extension
+        run: |
+          cd src-firefox
+          zip -r ../es-client-firefox.zip .
+          cd ..
+
+      - name: build web
+        run: pnpm build
+
+      - name: package web
+        run: |
+          cd dist
+          zip -r ../es-client-web.zip .
+          cd ..
+
+      - name: upload extension artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension_artifacts
+          if-no-files-found: error
+          path: |
+            es-client-chrome.zip
+            es-client-edge.zip
+            es-client-firefox.zip
+            es-client-web.zip
+
   build_desktop:
     name: 构建【${{ matrix.platform }}】桌面端
     strategy:
       matrix:
         platform: [ macos-latest, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.platform }}
+    permissions:
+      contents: read
     env:
       TAURI_PRIVATE_KEY: "${{ secrets.TAURI_PRIVATE_KEY }}"
       TAURI_KEY_PASSWORD: "${{ secrets.TAURI_KEY_PASSWORD }}"
@@ -29,13 +96,19 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: true
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.5.1'
-          cache: 'yarn'
-      - run: yarn
+          node-version: lts/*
+          cache: 'pnpm'
 
-      - run: rustup toolchain install stable
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
       - name: mac > setup targets
         if: matrix.platform == 'macos-latest'
         run: |
@@ -46,21 +119,24 @@ jobs:
         if: matrix.platform == 'ubuntu-latest'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 librsvg2-dev patchelf
+          sudo apt-get install -y pkg-config libclang-dev libxcb1-dev libxrandr-dev \
+                                  libdbus-1-dev libpipewire-0.3-dev libwayland-dev libegl-dev \
+                                  libglib2.0-dev libgtk-3-dev libwebkit2gtk-4.1-dev libgbm-dev \
+                                  libappindicator3-dev librsvg2-dev patchelf
 
       ### build apple arm
 
-      - name: mac aaarch64 > build
-        run: yarn tauri:build --target aarch64-apple-darwin
+      - name: mac aarch64 > build
+        run: pnpm tauri:build -- --target aarch64-apple-darwin
         if: matrix.platform == 'macos-latest'
 
-      - name: mac aaarch64 > rename artifacts
+      - name: mac aarch64 > rename artifacts
         if: matrix.platform == 'macos-latest'
         run: |
           mv src-tauri/target/aarch64-apple-darwin/release/bundle/macos/es-client.app.tar.gz src-tauri/target/aarch64-apple-darwin/release/bundle/macos/es-client_aarch64.app.tar.gz
           mv src-tauri/target/aarch64-apple-darwin/release/bundle/macos/es-client.app.tar.gz.sig src-tauri/target/aarch64-apple-darwin/release/bundle/macos/es-client_aarch64.app.tar.gz.sig
 
-      - name: mac aaarch64 > upload artifacts
+      - name: mac aarch64 > upload artifacts
         if: matrix.platform == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
@@ -73,7 +149,7 @@ jobs:
       ### build apple x86_64
 
       - name: mac x86_64 > build
-        run: yarn tauri:build --target x86_64-apple-darwin
+        run: pnpm tauri:build -- --target x86_64-apple-darwin
         if: matrix.platform == 'macos-latest'
 
       - name: mac x86_64 > rename artifacts
@@ -95,7 +171,7 @@ jobs:
       ### build linux
 
       - name: linux > build
-        run: yarn tauri:build
+        run: pnpm tauri:build
         if: matrix.platform == 'ubuntu-latest'
 
       - name: linux > upload artifacts
@@ -112,7 +188,7 @@ jobs:
       ### build windows
 
       - name: windows > build
-        run: yarn tauri:build
+        run: pnpm tauri:build
         if: matrix.platform == 'windows-latest'
 
       - name: windows > upload artifacts
@@ -128,8 +204,11 @@ jobs:
   publish:
     name: Publish release
     needs:
+      - build_extensions
       - build_desktop
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: martinbeentjes/npm-get-version-action@v1.3.1
@@ -145,6 +224,7 @@ jobs:
         with:
           draft: true
           prerelease: false
+          generateReleaseNotes: true
           tag: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
           artifacts: |
@@ -157,18 +237,29 @@ jobs:
             github-artifacts/mac_x86_64_artifacts/macos/es-client_x64*
             github-artifacts/windows_artifacts/bundle/msi/es-client_*_x64*
             github-artifacts/windows_artifacts/es-client.exe
+            github-artifacts/extension_artifacts/es-client-chrome.zip
+            github-artifacts/extension_artifacts/es-client-edge.zip
+            github-artifacts/extension_artifacts/es-client-firefox.zip
+            github-artifacts/extension_artifacts/es-client-web.zip
           body: |
-            ## 变更日志
             ## 如何使用 es-client
             ### 桌面端
-            * [Windows .msi](https://github.com/q2316367743/es-client/releases/download/${{ github.ref_name }}/es-client_${{ steps.package-version.outputs.current-version }}_x64_en-US.msi)
-            * [Mac x68 .dmg](https://github.com/q2316367743/es-client/releases/download/${{ github.ref_name }}/es-client_${{ steps.package-version.outputs.current-version }}_x64.dmg) / [Mac aarch64 .dmg](https://github.com/q2316367743/es-client/releases/download/${{ github.ref_name }}/es-client_${{ steps.package-version.outputs.current-version }}_aarch64.dmg)
-            * [Linux .AppImage](https://github.com/q2316367743/es-client/releases/download/${{ github.ref_name }}/es-client_${{ steps.package-version.outputs.current-version }}_amd64.AppImage) / [Linux .deb](https://github.com/q2316367743/es-client/releases/download/${{ github.ref_name }}/es-client_${{ steps.package-version.outputs.current-version }}_amd64.deb)
-            
-            ### 浏览器拓展
+            * [Windows .msi](https://github.com/abbhb/es-client/releases/download/${{ github.ref_name }}/es-client_${{ steps.package-version.outputs.current-version }}_x64_en-US.msi)
+            * [Mac x86_64 .dmg](https://github.com/abbhb/es-client/releases/download/${{ github.ref_name }}/es-client_${{ steps.package-version.outputs.current-version }}_x64.dmg) / [Mac aarch64 .dmg](https://github.com/abbhb/es-client/releases/download/${{ github.ref_name }}/es-client_${{ steps.package-version.outputs.current-version }}_aarch64.dmg)
+            * [Linux .AppImage](https://github.com/abbhb/es-client/releases/download/${{ github.ref_name }}/es-client_${{ steps.package-version.outputs.current-version }}_amd64.AppImage) / [Linux .deb](https://github.com/abbhb/es-client/releases/download/${{ github.ref_name }}/es-client_${{ steps.package-version.outputs.current-version }}_amd64.deb)
+
+            ### 浏览器扩展（离线包）
+            * [Chrome 扩展包](https://github.com/abbhb/es-client/releases/download/${{ github.ref_name }}/es-client-chrome.zip)
+            * [Edge 扩展包](https://github.com/abbhb/es-client/releases/download/${{ github.ref_name }}/es-client-edge.zip)
+            * [Firefox 扩展包](https://github.com/abbhb/es-client/releases/download/${{ github.ref_name }}/es-client-firefox.zip)
+            * [Web 版本包](https://github.com/abbhb/es-client/releases/download/${{ github.ref_name }}/es-client-web.zip)
+
+            ### 浏览器拓展（应用商店）
             * [Google Chrome](https://chromewebstore.google.com/detail/es-client/pkhmgepniefdigphghbolofjgbnhnhfd)
             * [Mozilla Firefox](https://addons.mozilla.org/zh-CN/firefox/addon/es-client/)
             * [Microsoft Edge](https://microsoftedge.microsoft.com/addons/detail/esclient/aonamamifdfigcflbeokdndfappnmogo)
+
             ### 其他方式
             * [uTools插件](https://u.tools/plugins/detail/es-client/)
             * [主页](https://es-client.esion.xyz)
+
