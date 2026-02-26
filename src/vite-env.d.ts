@@ -11,3 +11,5 @@ interface ImportMetaEnv {
   VITE_REFERRER: string;
   VITE_HOMENAME: string;
 }
+
+declare module '@json2csv/plainjs';
