@@ -55,4 +55,5 @@ export const switchLanguage = (newLocale: LocaleLanguage) => {
  * @param key 翻译键（如 Header.index）
  * @returns 翻译后的文本（失败时返回原键名，避免页面空白）
  */
-export const t = (key: string) => i18n.global.t(key);
+export const t = (key: string, values?: Record<string, unknown>) =>
+  values !== undefined ? i18n.global.t(key, values) : i18n.global.t(key);
