@@ -75,7 +75,9 @@ jobs:
 
   build_desktop:
     name: 构建【${{ matrix.platform }}】桌面端
+    continue-on-error: true
     strategy:
+      fail-fast: false
       matrix:
         platform: [ macos-latest, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.platform }}
@@ -207,6 +209,7 @@ jobs:
       - build_extensions
       - build_desktop
     runs-on: ubuntu-latest
+    if: always() && needs.build_extensions.result == 'success'
     permissions:
       contents: write
     steps:
